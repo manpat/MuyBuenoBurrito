@@ -3,49 +3,85 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour {
 	public float moveSpeed = 1f;
-	public float jumpHeight = 2f;
-	public float airTime = 0.3f;
+	public float jumpHeight = 2f; // Must be initialised before SetUpGravity is called 
+	public float airTime = 0.3f; // Must be initialised before SetUpGravity is called
 
-	public float initialJumpVelocity;
+	public float sameLevelJumpDistance; // just for reference
+	public float maxHeightJumpDistance; // just for reference
+	private float initialJumpVelocity;
 	private bool isGrounded = true;
 
-
-	// Use this for initialization
 	void Start () {
 		SetUpGravity();
 	}
 	
-	// Update is called once per frame
 	void Update () {
-		SetUpGravity(); ////////////////////////// TEMP ///////////
+		SetUpGravity(); ////////////////////////// TEMP /////////// This is only for realtime tweaking
 
 		Vector3 vel = rigidbody2D.velocity;
 		vel.x = Input.GetAxis("Horizontal") * moveSpeed;
 
-		if(Input.GetKeyDown(KeyCode.Space) && isGrounded){
-			vel += Vector3.up * initialJumpVelocity;
+		if(Input.GetKey(KeyCode.Space) && isGrounded){
+			vel.y = initialJumpVelocity;
 			isGrounded = false;
 		}else if(Input.GetKeyUp(KeyCode.Space) && vel.y > 0f){
-			vel.y *= 0.5f;
+			vel.y *= 0.5f; // Halve upwards velocity
 		}
 
 		rigidbody2D.velocity = vel;
 		CheckHeight();
+
+		MoveCamera();
 	}
 
 	void SetUpGravity(){
-		float gravity = 8f * jumpHeight / (5f * airTime * airTime); // Fancy math
+		// s = ut + (at^2) /2
+		// 0 = u*airTime + gravity*airTime^2 * 1/2
+		// u*airTime = -gravity*airTime^2 * 1/2
+		// u = -gravity * airTime * 1/2
+
+		// s = ut + at^2 * 1/2
+		// jumpHeight = (-gravity * airTime * 1/2) * (airTime * 1/2) + gravity * (airTime * 1/2)^2 * 1/2
+		// jumpHeight = -gravity * 1/4 * airTime^2 + gravity * airTime^2 * 1/4 * 1/2
+		// jumpHeight = -gravity * airTime^2 * 1/4 + gravity * airTime^2 * 1/8
+		// jumpHeight = gravity * airTime^2 * (1/8 - 1/4) = -gravity * airTime^2 * 1/8
+		// jumpHeight = -gravity * airTime^2 * 1/8
+		// -gravity   = jumpHeight / (airTime^2 * 1/8)
+		//  gravity   = -jumpHeight / (airTime^2 * 1/8)
+		//  gravity   = -jumpHeight * 8 / airTime^2
+
+		float gravity = 8f * jumpHeight / (airTime * airTime); // Fancy math
 		Physics2D.gravity = -Vector2.up * gravity;
 
-		initialJumpVelocity = airTime * gravity;
+		initialJumpVelocity = airTime * gravity / 2f;
+
+		sameLevelJumpDistance = moveSpeed * airTime;
+		maxHeightJumpDistance = moveSpeed * airTime / 2f;
+	}
+
+	void MoveCamera(){
+		Vector3 campos = Camera.main.transform.position;
+
+		campos.x = transform.position.x;
+		campos.y = Mathf.Max(transform.position.y, Game.main.deathLevel + Camera.main.orthographicSize);
+
+		Camera.main.transform.position = campos;
 	}
 
 	void CheckHeight(){
+		if(transform.position.y < Game.main.deathLevel) Die();
+
 		RaycastHit2D hit = Physics2D.BoxCast((Vector2)transform.position, Vector2.one, 0, -Vector2.up);
-		if(hit.fraction < 0.02f){
+		if(hit && hit.fraction < 0.06f){ // Tolerance. hit.fraction rarely == 0
 			isGrounded = true;
+			Debug.DrawLine(transform.position, hit.point, Color.green);
 		}else{
 			isGrounded = false;
+			Debug.DrawLine(transform.position, hit.point, Color.red);
 		}
+	}
+
+	void Die(){
+		Game.main.PlayerDeath();
 	}
 }
