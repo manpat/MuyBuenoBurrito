@@ -9,13 +9,19 @@ public class PlayerController : MonoBehaviour {
 	public float sameLevelJumpDistance; // just for reference
 	public float maxHeightJumpDistance; // just for reference
 	private float initialJumpVelocity;
+
+	public float health = 100f;
+
 	private bool isGrounded = true;
+	public bool isDead = false;
 
 	void Start () {
 		SetUpGravity();
 	}
 	
 	void Update () {
+		if(isDead) return;
+
 		SetUpGravity(); ////////////////////////// TEMP /////////// This is only for realtime tweaking
 
 		Vector3 vel = rigidbody2D.velocity;
@@ -29,8 +35,8 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		rigidbody2D.velocity = vel;
-		CheckHeight();
 
+		CheckHeight();
 		MoveCamera();
 	}
 
@@ -50,7 +56,7 @@ public class PlayerController : MonoBehaviour {
 		//  gravity   = -jumpHeight / (airTime^2 * 1/8)
 		//  gravity   = -jumpHeight * 8 / airTime^2
 
-		float gravity = 8f * jumpHeight / (airTime * airTime); // Fancy math
+		float gravity = 8f * jumpHeight / (airTime * airTime);
 		Physics2D.gravity = -Vector2.up * gravity;
 
 		initialJumpVelocity = airTime * gravity / 2f;
@@ -72,7 +78,7 @@ public class PlayerController : MonoBehaviour {
 		if(transform.position.y < Game.main.deathLevel) Die();
 
 		RaycastHit2D hit = Physics2D.BoxCast((Vector2)transform.position, Vector2.one, 0, -Vector2.up);
-		if(hit && hit.fraction < 0.06f){ // Tolerance. hit.fraction rarely == 0
+		if(hit && hit.fraction < (transform.localScale.y/2 + 0.1f)){ // Accounts for size of body
 			isGrounded = true;
 			Debug.DrawLine(transform.position, hit.point, Color.green);
 		}else{
@@ -83,5 +89,11 @@ public class PlayerController : MonoBehaviour {
 
 	void Die(){
 		Game.main.PlayerDeath();
+		isDead = true;
+	}
+
+	void TakeDamage(float amt){
+		health -= amt;
+		if(health <= 0f) Die();
 	}
 }
