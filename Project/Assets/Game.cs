@@ -3,29 +3,33 @@ using System.Collections;
 
 public class Game : MonoBehaviour {
 	static public Game main; // Singleton
-	public float deathLevel = -1f; 
 
 	public GameObject playerPrefab;
 	public PlayerController player;
-	public GameObject playerSpawn;
+
+	public Level currentLevel;
 
 	void Awake(){
 		main = this; // Set singleton
+		DontDestroyOnLoad(this);
 	}
 
 	void Start () {
+		currentLevel = FindObjectOfType<Level>();
 		RespawnPlayer();
 	}
 	
 	void Update () {
-	
+		if(Input.GetKey(KeyCode.Return)){
+			PlayerEndLevel();
+		}
 	}
 
 	public void RespawnPlayer(){
 		if(player != null) Destroy(player.gameObject);
 
 		GameObject obj = (GameObject)Instantiate(playerPrefab);
-		obj.transform.position = playerSpawn.transform.position;
+		obj.transform.position = currentLevel.playerSpawn.transform.position;
 
 		player = obj.GetComponent<PlayerController>();
 		player.isDead = false;
@@ -39,6 +43,7 @@ public class Game : MonoBehaviour {
 	}
 	public void PlayerEndLevel(){ // Should be called when player reaches end of level
 		print("End of level");
+		Application.LoadLevel("testlevel2");
 		// Load next level?
 		// Win screen
 	}
@@ -50,17 +55,17 @@ public class Game : MonoBehaviour {
 		// Add to stats or whatever
 	}
 
-	void OnDrawGizmos(){
-		Gizmos.color = Color.red;
-		Gizmos.DrawLine(new Vector3(-1000, deathLevel), new Vector3(1000, deathLevel));
+	void OnLevelWasLoaded(int level){
+		print("Level loaded: " + level.ToString());
+		currentLevel = FindObjectOfType<Level>();
+		RespawnPlayer();
+	}
 
+	void OnDrawGizmos(){
 		Gizmos.color = Color.magenta;
 		Gizmos.DrawSphere(Camera.main.transform.position - Vector3.left * Camera.main.aspect * Camera.main.orthographicSize, 0.5f);
 		Gizmos.DrawSphere(Camera.main.transform.position + Vector3.left * Camera.main.aspect * Camera.main.orthographicSize, 0.5f);
 		Gizmos.DrawSphere(Camera.main.transform.position + Vector3.up * Camera.main.orthographicSize, 0.5f);
 		Gizmos.DrawSphere(Camera.main.transform.position - Vector3.up * Camera.main.orthographicSize, 0.5f);
-
-		Gizmos.color = new Color(0.2f, 1f, 1f);
-		Gizmos.DrawSphere(playerSpawn.transform.position, 0.5f);
 	}
 }

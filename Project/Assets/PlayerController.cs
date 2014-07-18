@@ -75,13 +75,13 @@ public class PlayerController : MonoBehaviour {
 		Vector3 campos = Camera.main.transform.position;
 
 		campos.x = transform.position.x;
-		campos.y = Mathf.Max(transform.position.y, Game.main.deathLevel + Camera.main.orthographicSize);
+		campos.y = Mathf.Max(transform.position.y, Game.main.currentLevel.deathLevel + Camera.main.orthographicSize);
 
 		Camera.main.transform.position = campos;
 	}
 
 	void CheckHeight(){
-		if(transform.position.y < Game.main.deathLevel) Die();
+		if(transform.position.y < Game.main.currentLevel.deathLevel) Die();
 
 		RaycastHit2D hit = Physics2D.BoxCast((Vector2)transform.position, Vector2.one, 0, -Vector2.up);
 		if(hit && hit.fraction < (transform.localScale.y/2 + 0.1f)){ // Accounts for size of body
