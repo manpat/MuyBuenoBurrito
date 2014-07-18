@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour {
 	public float maxHeightJumpDistance; // just for reference
 	private float initialJumpVelocity;
 
+	public bool ignorePlatform = false;
+
 	public float health = 100f;
 
 	private bool isGrounded = true;
@@ -27,7 +29,11 @@ public class PlayerController : MonoBehaviour {
 		Vector3 vel = rigidbody2D.velocity;
 		vel.x = Input.GetAxis("Horizontal") * moveSpeed;
 
-		if(Input.GetKey(KeyCode.Space) && isGrounded){
+		ignorePlatform = false;
+
+		if(Input.GetKey(KeyCode.Space) && Input.GetAxis("Vertical") < 0f){
+			ignorePlatform = true;
+		}else if(Input.GetKey(KeyCode.Space) && isGrounded){
 			vel.y = initialJumpVelocity;
 			isGrounded = false;
 		}else if(Input.GetKeyUp(KeyCode.Space) && vel.y > 0f){
@@ -57,7 +63,7 @@ public class PlayerController : MonoBehaviour {
 		//  gravity   = -jumpHeight * 8 / airTime^2
 
 		float gravity = 8f * jumpHeight / (airTime * airTime);
-		Physics2D.gravity = -Vector2.up * gravity;
+		rigidbody2D.gravityScale = gravity / Physics2D.gravity.magnitude;
 
 		initialJumpVelocity = airTime * gravity / 2f;
 
