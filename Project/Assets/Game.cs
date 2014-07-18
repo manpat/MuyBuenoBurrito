@@ -59,5 +59,8 @@ public class Game : MonoBehaviour {
 		Gizmos.DrawSphere(Camera.main.transform.position + Vector3.left * Camera.main.aspect * Camera.main.orthographicSize, 0.5f);
 		Gizmos.DrawSphere(Camera.main.transform.position + Vector3.up * Camera.main.orthographicSize, 0.5f);
 		Gizmos.DrawSphere(Camera.main.transform.position - Vector3.up * Camera.main.orthographicSize, 0.5f);
+
+		Gizmos.color = new Color(0.2f, 1f, 1f);
+		Gizmos.DrawSphere(playerSpawn.transform.position, 0.5f);
 	}
 }
