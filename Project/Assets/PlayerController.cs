@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour {
 	public float health = 100f;
 
 	private bool isGrounded = true;
+	private bool isDoubleJumping = false;
+	private bool spaceBeingHeld = false;
 	public bool isDead = false;
 
 	void Start () {
@@ -31,13 +33,26 @@ public class PlayerController : MonoBehaviour {
 
 		ignorePlatform = false;
 
-		if(Input.GetKey(KeyCode.Space) && Input.GetAxis("Vertical") < 0f){
+		if(Input.GetKey(KeyCode.Space) && Input.GetAxis("Vertical") < 0f){ // Drop from platform
 			ignorePlatform = true;
-		}else if(Input.GetKey(KeyCode.Space) && isGrounded){
+			spaceBeingHeld = true;
+
+		}else if(Input.GetKey(KeyCode.Space) && (isGrounded || (!spaceBeingHeld && !isDoubleJumping && rigidbody2D.velocity.y < 0f))){ // Jump
+			// Jump if space is pressed and the player is either on the ground, or has released space previously, hasn't double
+			//		jumped yet, and is falling. Note: player will start falling almost immediately after space is released. 
+
 			vel.y = initialJumpVelocity;
-			isGrounded = false;
-		}else if(Input.GetKeyUp(KeyCode.Space) && vel.y > 0f){
+			spaceBeingHeld = true;
+
+			if(isGrounded){
+				isGrounded = false;
+			}else{
+				isDoubleJumping = true;
+			}
+
+		}else if(Input.GetKeyUp(KeyCode.Space) && vel.y > 0f){ // Stop jumping if player is moving up still
 			vel.y *= 0.5f; // Halve upwards velocity
+			spaceBeingHeld = false;
 		}
 
 		rigidbody2D.velocity = vel;
@@ -75,7 +90,7 @@ public class PlayerController : MonoBehaviour {
 		Vector3 campos = Camera.main.transform.position;
 
 		campos.x = transform.position.x;
-		campos.y = Mathf.Max(transform.position.y, Game.main.currentLevel.deathLevel + Camera.main.orthographicSize);
+		campos.y = Mathf.Max(transform.position.y, Game.main.currentLevel.deathLevel + Camera.main.orthographicSize); // Don't go below death level
 
 		Camera.main.transform.position = campos;
 	}
@@ -83,9 +98,11 @@ public class PlayerController : MonoBehaviour {
 	void CheckHeight(){
 		if(transform.position.y < Game.main.currentLevel.deathLevel) Die();
 
-		RaycastHit2D hit = Physics2D.BoxCast((Vector2)transform.position, Vector2.one, 0, -Vector2.up);
-		if(hit && hit.fraction < (transform.localScale.y/2 + 0.1f)){ // Accounts for size of body
+		RaycastHit2D hit = Physics2D.BoxCast((Vector2)transform.position, Vector2.one, 0, -Vector2.up); // Raycast down
+		if(hit && hit.fraction <= (transform.localScale.y/2 + 0.1f)){ // If raycast returned something and distance is <= player height/2
+			// on ground
 			isGrounded = true;
+			isDoubleJumping = false;
 			Debug.DrawLine(transform.position, hit.point, Color.green);
 		}else{
 			isGrounded = false;
@@ -100,6 +117,9 @@ public class PlayerController : MonoBehaviour {
 
 	void TakeDamage(float amt){
 		health -= amt;
-		if(health <= 0f) Die();
+		// NEEDS FEEDBACK
+		// rigidbody2D.AddForce((Vector2.up * 10f - rigidbody2D.velocity * 30f) / Time.deltaTime);
+
+		if(!isDead && health <= 0f) Die(); // Die if necessary but don't die too much
 	}
 }

@@ -4,7 +4,7 @@ using System.Collections;
 public class Enemy : MonoBehaviour {
 	public float health = 100f;
 	public float attack = 10f;
-	public float attackRate = 0.5f; // Hz
+	public float attackRate = 4f; // Hz
 
 	public bool isDead = false;
 
@@ -29,7 +29,7 @@ public class Enemy : MonoBehaviour {
 
 	void TakeDamage(float amt){
 		health -= amt;
-		if(health <= 0f) Die();
+		if(!isDead && health <= 0f) Die(); // Die if necessary but don't die too much
 	}
 
 	void Attack(GameObject player){
