@@ -9,6 +9,7 @@ public class Crate : MonoBehaviour {
 	}
 
 	void Break(){
-		renderer.material.color = Color.red;
+		// Spawn proxy for particle effect
+		Destroy(gameObject);
 	}
 }
