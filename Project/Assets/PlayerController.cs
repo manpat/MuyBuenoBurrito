@@ -1,6 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public enum PlayerState {
+	Idle,
+	Running,
+	Jumping,
+	// more
+};
+
 public class PlayerController : MonoBehaviour {
 	public float moveSpeed = 1f;
 	public float jumpHeight = 2f; // Must be initialised before SetUpGravity is called 
@@ -15,12 +22,18 @@ public class PlayerController : MonoBehaviour {
 	public float health = 100f;
 
 	private bool isGrounded = true;
+	private bool isJumping = false;
 	private bool isDoubleJumping = false;
 	private bool spaceBeingHeld = false;
 	public bool isDead = false;
 
+	private Animator animator;
+	private PlayerState state = PlayerState.Idle;
+	private short dirFacing = 1;
+
 	void Start () {
 		SetUpGravity();
+		animator = gameObject.GetComponent<Animator>();
 	}
 	
 	void Update () {
@@ -46,6 +59,7 @@ public class PlayerController : MonoBehaviour {
 
 			if(isGrounded){
 				isGrounded = false;
+				isJumping = true;
 			}else{
 				isDoubleJumping = true;
 			}
@@ -56,6 +70,22 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		rigidbody2D.velocity = vel;
+
+		short nDirFacing = dirFacing;
+		if(Mathf.Abs(vel.x) > 0f){
+			nDirFacing = (short)Mathf.Sign(vel.x);
+		}
+
+		if(isJumping || isDoubleJumping){
+			// if(vel.y < -Physics2D.gravity.magnitude*rigidbody2D.gravityScale * 0.5f) 
+			//		SetAnimationState(PlayerState.Falling); // Falling for 1/2 a second
+
+			SetAnimationState(PlayerState.Jumping, nDirFacing);
+		}else if(isGrounded && Mathf.Abs(vel.x) > 0.5f){
+			SetAnimationState(PlayerState.Running, nDirFacing);
+		}else{
+			SetAnimationState(PlayerState.Idle, nDirFacing);
+		}
 
 		CheckHeight();
 		MoveCamera();
@@ -98,10 +128,14 @@ public class PlayerController : MonoBehaviour {
 	void CheckHeight(){
 		if(transform.position.y < Game.main.currentLevel.deathLevel) Die();
 
-		RaycastHit2D hit = Physics2D.BoxCast((Vector2)transform.position, Vector2.one, 0, -Vector2.up); // Raycast down
-		if(hit && hit.fraction <= (transform.localScale.y/2 + 0.1f)){ // If raycast returned something and distance is <= player height/2
+		Vector2 castBoxSize = collider2D.bounds.extents*2f;
+		castBoxSize.y = 0.1f;
+
+		RaycastHit2D hit = Physics2D.BoxCast((Vector2)transform.position, castBoxSize, 0, -Vector2.up); // Raycast down
+		if(hit && hit.fraction <= (collider2D.bounds.extents.y + 0.1f)){ // If raycast returned something and distance is <= player height/2
 			// on ground
 			isGrounded = true;
+			isJumping = false;
 			isDoubleJumping = false;
 			Debug.DrawLine(transform.position, hit.point, Color.green);
 		}else{
@@ -121,5 +155,27 @@ public class PlayerController : MonoBehaviour {
 		// rigidbody2D.AddForce((Vector2.up * 10f - rigidbody2D.velocity * 30f) / Time.deltaTime);
 
 		if(!isDead && health <= 0f) Die(); // Die if necessary but don't die too much
+	}
+
+	void SetAnimationState(PlayerState newState, short newDirFacing){
+		if(state == newState && dirFacing == newDirFacing) return;
+		state = newState;
+		dirFacing = newDirFacing;
+
+		switch(newState){
+			case PlayerState.Idle:
+				animator.Play("idle");
+				break;
+			case PlayerState.Running:
+				animator.Play("run");
+				break;
+			case PlayerState.Jumping:
+				animator.Play("jump");
+				break;
+		}
+
+		Vector3 scale = transform.localScale;
+		scale.x = dirFacing*2f;
+		transform.localScale = scale;
 	}
 }
