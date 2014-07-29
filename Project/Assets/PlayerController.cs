@@ -31,9 +31,13 @@ public class PlayerController : MonoBehaviour {
 	private PlayerState state = PlayerState.Idle;
 	private short dirFacing = 1;
 
+	public float platformDropTime = 0f;
+	private Timer platformDropTimer;
+
 	void Start () {
 		SetUpGravity();
 		animator = gameObject.GetComponent<Animator>();
+		platformDropTimer = gameObject.AddComponent<Timer>();
 	}
 	
 	void Update () {
@@ -44,11 +48,13 @@ public class PlayerController : MonoBehaviour {
 		Vector3 vel = rigidbody2D.velocity;
 		vel.x = Input.GetAxis("Horizontal") * moveSpeed;
 
-		ignorePlatform = false;
+		if(platformDropTimer > platformDropTime) ignorePlatform = false;
 
 		if(Input.GetKey(KeyCode.Space) && Input.GetAxis("Vertical") < 0f){ // Drop from platform
 			ignorePlatform = true;
 			spaceBeingHeld = true;
+
+			platformDropTimer.Reset();
 
 		}else if(Input.GetKey(KeyCode.Space) && (isGrounded || (!spaceBeingHeld && !isDoubleJumping && rigidbody2D.velocity.y < 0f))){ // Jump
 			// Jump if space is pressed and the player is either on the ground, or has released space previously, hasn't double
@@ -65,7 +71,7 @@ public class PlayerController : MonoBehaviour {
 			}
 
 		}else if(Input.GetKeyUp(KeyCode.Space) && vel.y > 0f){ // Stop jumping if player is moving up still
-			vel.y *= 0.5f; // Halve upwards velocity
+			// vel.y *= 0.5f; // Halve upwards velocity
 			spaceBeingHeld = false;
 		}
 
