@@ -10,8 +10,13 @@ public class OneWayPlatform : MonoBehaviour {
 			if(c == collider2D || c.rigidbody2D == null) continue;
 
 			float bottom = c.transform.position.y - c.collider2D.bounds.extents.y;
+			bool ignorePlatform = bottom < platformTop;
 
-			Physics2D.IgnoreCollision(collider2D, c, bottom < platformTop);
+			if(c.CompareTag("Enemy")){
+				ignorePlatform = ignorePlatform || c.GetComponent<Enemy>().ignorePlatform;
+			}
+
+			Physics2D.IgnoreCollision(collider2D, c, ignorePlatform);
 		} 
 
 		float playerBottom = Game.main.player.transform.position.y - Game.main.player.collider2D.bounds.extents.y;

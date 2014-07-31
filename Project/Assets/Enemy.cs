@@ -10,71 +10,46 @@ public enum EnemyState {
 
 public class Enemy : MonoBehaviour {
 	public float health = 100f;
-	public float speed = 10f;
+	public float moveSpeed = 10f;
 	public float attack = 10f;
 	public float attackRate = 3f; // Hz
 
 	public bool isDead = false;
-	public bool isRunning = false;
+	public bool ignorePlatform = false;
 
-	private Timer attackTimer;
+	protected Animator animator;
+	protected EnemyState state = EnemyState.Idle;
+	protected short dirFacing = 1;
 
-	private Animator animator;
-	private EnemyState state = EnemyState.Idle;
-	private short dirFacing = 1;
-
-	void Start () {
-		attackTimer = gameObject.AddComponent<Timer>();
+	protected virtual void Start () {
 		animator = gameObject.GetComponent<Animator>();
 	}
 	
-	void Update () {
+	protected virtual void Update () {
 		if(isDead) return;
 
 		if(health <= 0f){
 			Die();
 		}
-
-		Vector2 vel = rigidbody2D.velocity;
-		if(!isRunning){
-			isRunning = Mathf.Abs(GetDirFacingIfPlayerSeen()) > 0f;
-		}else if(Mathf.Abs(DistToPlayer().x) > Game.main.player.collider2D.bounds.extents.x*2f){ // Don't move if too close
-			vel.x = GetDirFacingIfPlayerSeen() * speed;
-			rigidbody2D.velocity = vel;
-		}
-
-		short nDirFacing = dirFacing;
-		if(Mathf.Abs(vel.x) > 0f){
-			nDirFacing = (short)Mathf.Sign(vel.x);
-		}
-
-		/*if(isJumping || isDoubleJumping){
-			// if(vel.y < -Physics2D.gravity.magnitude*rigidbody2D.gravityScale * 0.5f) 
-			//		SetAnimationState(EnemyState.Falling); // Falling for 1/2 a second
-
-			SetAnimationState(EnemyState.Jumping, nDirFacing);
-		}else */if(/*isGrounded && */Mathf.Abs(vel.x) > 0.5f){
-			SetAnimationState(EnemyState.Running, nDirFacing);
-		}else{
-			SetAnimationState(EnemyState.Idle, nDirFacing);
-		}
+		
+		if(transform.position.y < Game.main.currentLevel.deathLevel) Die();
 	}
 
-	void Die(){
+	protected void Die(){
 		Game.main.EnemyDeath();
 		isDead = true;
 	}
 
-	void TakeDamage(float amt){
+	protected void TakeDamage(float amt){
 		health -= amt;
 		if(!isDead && health <= 0f) Die(); // Die if necessary but don't die too much
 	}
 
-	Vector2 DistToPlayer(){
+	protected Vector2 DistToPlayer(){
 		return Game.main.player.transform.position - transform.position;
 	}
 
-	float GetDirFacingIfPlayerSeen(){
+	protected float GetDirToPlayer(){
 		float diff = DistToPlayer().x;
 		if(Mathf.Abs(diff) < Camera.main.orthographicSize*2f){
 			return Mathf.Sign(diff);
@@ -83,11 +58,8 @@ public class Enemy : MonoBehaviour {
 		return 0;
 	}
 
-	void Attack(GameObject player){
-		if(attackTimer < 1f/attackRate) return;
-		
-		player.SendMessage("TakeDamage", attack, SendMessageOptions.DontRequireReceiver);
-		attackTimer.Reset();
+	protected virtual void Attack(GameObject player){
+
 	}
 
 	void OnCollisionEnter2D(Collision2D col){
@@ -103,7 +75,7 @@ public class Enemy : MonoBehaviour {
 		}
 	}
 
-	void SetAnimationState(EnemyState newState, short newDirFacing){
+	protected void SetAnimationState(EnemyState newState, short newDirFacing){
 		if(state == newState && dirFacing == newDirFacing) return;
 		state = newState;
 		dirFacing = newDirFacing;
@@ -116,7 +88,7 @@ public class Enemy : MonoBehaviour {
 				animator.Play("run");
 				break;
 			case EnemyState.Jumping:
-				// animator.Play("jump");
+				animator.Play("jump");
 				break;
 
 			default:

@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour {
 	private short dirFacing = 1;
 
 	public float platformDropTime = 0f;
-	private Timer platformDropTimer;
+	public Timer platformDropTimer;
 
 	void Start () {
 		SetUpGravity();
@@ -48,9 +48,9 @@ public class PlayerController : MonoBehaviour {
 		Vector3 vel = rigidbody2D.velocity;
 		vel.x = Input.GetAxis("Horizontal") * moveSpeed;
 
-		if(platformDropTimer > platformDropTime) ignorePlatform = false;
+		ignorePlatform = false;
 
-		if(Input.GetKey(KeyCode.Space) && Input.GetAxis("Vertical") < 0f){ // Drop from platform
+		if(Input.GetKey(KeyCode.Space) && Input.GetAxis("Vertical") < -0.2f){ // Drop from platform
 			ignorePlatform = true;
 			spaceBeingHeld = true;
 

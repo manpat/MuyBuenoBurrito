@@ -10,21 +10,21 @@ public class CloudController : MonoBehaviour {
 	
 	private Timer timer; 
 
-	// Use this for initialization
 	void Start () {
 		timer = gameObject.AddComponent<Timer>();
 	}
 	
-	// Update is called once per frame
 	void Update () {
-		if(timer > (spawnInterval + (Random.value - 0.5f) * intervalFlux) 
-				- Game.main.player.rigidbody2D.velocity.x / Camera.main.orthographicSize){
+		// print(Game.main.player.rigidbody2D.velocity.x / Camera.main.orthographicSize);
+		if(timer > (spawnInterval + (Random.value - 0.5f) * intervalFlux 
+				- Game.main.player.rigidbody2D.velocity.x / Camera.main.orthographicSize * 0f)){
+
 			Vector3 spawnPos = Camera.main.transform.position;
 			spawnPos.x += Camera.main.orthographicSize * 2f;
 			spawnPos.y = spawnHeight + (Random.value-0.5f) * spawnHeightFlux;
-			spawnPos.z = 1f;
+			spawnPos.z = 3f;
 
-			GameObject obj = (GameObject)Instantiate(cloudPrefab, spawnPos, Quaternion.identity);
+			Instantiate(cloudPrefab, spawnPos, Quaternion.identity);
 			timer.Reset();
 		}
 	}
