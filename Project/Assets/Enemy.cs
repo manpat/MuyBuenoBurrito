@@ -17,6 +17,8 @@ public class Enemy : MonoBehaviour {
 	public bool isDead = false;
 	public bool ignorePlatform = false;
 
+	public GameObject deathProxy;
+
 	protected Animator animator;
 	protected EnemyState state = EnemyState.Idle;
 	protected short dirFacing = 1;
@@ -37,7 +39,9 @@ public class Enemy : MonoBehaviour {
 
 	protected void Die(){
 		Game.main.EnemyDeath();
+		if(deathProxy) Instantiate(deathProxy, transform.position, Quaternion.identity);
 		isDead = true;
+		Destroy(gameObject);
 	}
 
 	protected void TakeDamage(float amt){

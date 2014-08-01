@@ -85,7 +85,8 @@ public class Enemy_Advanced : Enemy {
 		if(Mathf.Abs(playerPos.x - transform.position.x) < collider2D.bounds.extents.x){
 			velocity.x = 0f;
 		}else if(WalkableAhead()){
-			velocity.x = GetDirToPlayer() * moveSpeed;
+			// velocity.x = (GetDirToPlayer() * moveSpeed + velocity.x*2f)/3f;
+			velocity.x += (GetDirToPlayer() * moveSpeed - velocity.x)*0.5f;
 		}else{
 			velocity.x = 0; //GetDirToPlayer() * moveSpeed;
 		}

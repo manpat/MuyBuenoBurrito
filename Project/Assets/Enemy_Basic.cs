@@ -19,7 +19,8 @@ public class Enemy_Basic : Enemy {
 		if(!isRunning){
 			isRunning = Mathf.Abs(GetDirToPlayer()) > 0f;
 		}else if(Mathf.Abs(DistToPlayer().x) > Game.main.player.collider2D.bounds.extents.x*2f){ // Don't move if too close
-			vel.x = GetDirToPlayer() * moveSpeed;
+			// vel.x = (GetDirToPlayer() * moveSpeed + vel.x*2f)/3f;
+			vel.x += (GetDirToPlayer() * moveSpeed - vel.x)*0.1f;
 			rigidbody2D.velocity = vel;
 		}
 

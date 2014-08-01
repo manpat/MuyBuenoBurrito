@@ -5,6 +5,7 @@ public enum PlayerState {
 	Idle,
 	Running,
 	Jumping,
+	Attacking,
 	// more
 };
 
@@ -28,16 +29,25 @@ public class PlayerController : MonoBehaviour {
 	public bool isDead = false;
 
 	private Animator animator;
+	private Timer animationTimer;
 	private PlayerState state = PlayerState.Idle;
 	private short dirFacing = 1;
 
-	public float platformDropTime = 0f;
-	public Timer platformDropTimer;
+	public KeyCode attackKey;
+	public KeyCode throwShurikenKey;
+	public KeyCode specialKey; // for the leap?
+	public float maxAttackDist = 2f;
+
+	public GameObject shurikenPrefab;
+
+	// public float platformDropTime = 0f;
+	// public Timer platformDropTimer;
 
 	void Start () {
 		SetUpGravity();
 		animator = gameObject.GetComponent<Animator>();
-		platformDropTimer = gameObject.AddComponent<Timer>();
+		animationTimer = gameObject.AddComponent<Timer>();
+		// platformDropTimer = gameObject.AddComponent<Timer>();
 	}
 	
 	void Update () {
@@ -54,7 +64,7 @@ public class PlayerController : MonoBehaviour {
 			ignorePlatform = true;
 			spaceBeingHeld = true;
 
-			platformDropTimer.Reset();
+			// platformDropTimer.Reset();
 
 		}else if(Input.GetKey(KeyCode.Space) && (isGrounded || (!spaceBeingHeld && !isDoubleJumping && rigidbody2D.velocity.y < 0f))){ // Jump
 			// Jump if space is pressed and the player is either on the ground, or has released space previously, hasn't double
@@ -70,7 +80,7 @@ public class PlayerController : MonoBehaviour {
 				isDoubleJumping = true;
 			}
 
-		}else if(Input.GetKeyUp(KeyCode.Space) && vel.y > 0f){ // Stop jumping if player is moving up still
+		}else if(Input.GetKeyUp(KeyCode.Space)/* && vel.y > 0f*/){ // Stop jumping if player is moving up still
 			// vel.y *= 0.5f; // Halve upwards velocity
 			spaceBeingHeld = false;
 		}
@@ -82,7 +92,15 @@ public class PlayerController : MonoBehaviour {
 			nDirFacing = (short)Mathf.Sign(vel.x);
 		}
 
-		if(isJumping || isDoubleJumping){
+		if(Input.GetKeyDown(attackKey)){
+			Attack();
+			SetAnimationState(PlayerState.Attacking, nDirFacing);
+
+		}else if(Input.GetKeyDown(throwShurikenKey)){
+			ThrowShuriken();
+			SetAnimationState(PlayerState.Attacking, nDirFacing);
+
+		}else if(isJumping || isDoubleJumping){
 			// if(vel.y < -Physics2D.gravity.magnitude*rigidbody2D.gravityScale * 0.5f) 
 			//		SetAnimationState(PlayerState.Falling); // Falling for 1/2 a second
 
@@ -163,8 +181,27 @@ public class PlayerController : MonoBehaviour {
 		if(!isDead && health <= 0f) Die(); // Die if necessary but don't die too much
 	}
 
+	void Attack(){
+		Vector2 castBoxSize = collider2D.bounds.extents*2f; // Size of player
+		RaycastHit2D[] hits = Physics2D.BoxCastAll(transform.position, castBoxSize, 0, Vector2.right * (float)dirFacing, maxAttackDist, LayerMask.GetMask("Enemy"));
+		if(hits.Length > 0){
+			foreach(RaycastHit2D hit in hits){
+				if(hit.rigidbody) hit.rigidbody.AddForce(Vector2.right * (float)dirFacing * 50f / Time.deltaTime);
+				hit.collider.gameObject.SendMessage("TakeDamage", 50f);
+			}
+		}
+	}
+
+	void ThrowShuriken(){
+		GameObject obj = (GameObject)Instantiate(shurikenPrefab, transform.position, Quaternion.identity);
+		Physics2D.IgnoreCollision(collider2D, obj.collider2D, true);
+		obj.rigidbody2D.velocity = Vector2.right * (float)dirFacing * 30f;
+	}
+
 	void SetAnimationState(PlayerState newState, short newDirFacing){
-		if(state == newState && dirFacing == newDirFacing) return;
+		if(animationTimer < 0.1f || state == newState && dirFacing == newDirFacing) return;
+		animationTimer.Reset();
+
 		state = newState;
 		dirFacing = newDirFacing;
 
@@ -176,6 +213,9 @@ public class PlayerController : MonoBehaviour {
 				animator.Play("run");
 				break;
 			case PlayerState.Jumping:
+				animator.Play("jump");
+				break;
+			case PlayerState.Attacking:
 				animator.Play("jump");
 				break;
 		}
