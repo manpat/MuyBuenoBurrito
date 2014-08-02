@@ -7,6 +7,8 @@ public class Game : MonoBehaviour {
 	public GameObject playerPrefab;
 	public PlayerController player;
 
+	public GameObject blamoPrefab;
+
 	public Level currentLevel;
 
 	void Awake(){
@@ -23,6 +25,14 @@ public class Game : MonoBehaviour {
 		if(Input.GetKey(KeyCode.Return)){
 			PlayerEndLevel();
 		}
+	}
+
+	public Blamo CreateBlamo(Vector2 pos, float dmg){
+		Blamo blamo = ((GameObject)Instantiate(blamoPrefab, pos, Quaternion.identity)).GetComponent<Blamo>();
+		blamo.lifeTime = 2f;
+		blamo.explodeTime = 0.25f;
+		blamo.explodeScale = 0.5f + dmg/50f;
+		return blamo;
 	}
 
 	public void RespawnPlayer(){

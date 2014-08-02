@@ -7,9 +7,10 @@ public class OneWayPlatform : MonoBehaviour {
 	}
 
 	void Update () {
-		float platformTop = transform.position.y + collider2D.bounds.extents.y;
+		Vector2 thisScale = collider2D.bounds.extents;
+		float platformTop = transform.position.y + thisScale.y;
 
-		Collider2D[] colliders = Physics2D.OverlapAreaAll(transform.position - transform.localScale*0.7f, transform.position + transform.localScale*0.7f);
+		Collider2D[] colliders = Physics2D.OverlapAreaAll((Vector2)transform.position - thisScale*0.7f, (Vector2)transform.position + thisScale*0.7f);
 		foreach(Collider2D c in colliders){
 			if(c == collider2D || c.rigidbody2D == null) continue;
 
@@ -43,6 +44,6 @@ public class OneWayPlatform : MonoBehaviour {
 
 	void OnDrawGizmosSelected(){
 		Gizmos.color = Color.green;	
-		Gizmos.DrawWireCube(transform.position, transform.localScale*0.7f*2f);
+		Gizmos.DrawWireCube(transform.position, collider2D.bounds.extents*4f*0.7f);
 	}
 }

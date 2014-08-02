@@ -5,7 +5,9 @@ public enum PlayerState {
 	Idle,
 	Running,
 	Jumping,
+	Falling,
 	Attacking,
+	Dead,
 	// more
 };
 
@@ -22,10 +24,11 @@ public class PlayerController : MonoBehaviour {
 
 	public float health = 100f;
 
-	private bool isGrounded = true;
-	private bool isJumping = false;
-	private bool isDoubleJumping = false;
-	private bool spaceBeingHeld = false;
+	public bool isGrounded = true;
+	public bool isJumping = false;
+	public bool isDoubleJumping = false;
+	public bool isTripleJumping = false;
+	public bool spaceBeingHeld = false;
 	public bool isDead = false;
 
 	private Animator animator;
@@ -40,6 +43,12 @@ public class PlayerController : MonoBehaviour {
 
 	public GameObject shurikenPrefab;
 	public GameObject blamoPrefab;
+
+	// Pickup stuff
+
+	public bool canTripleJump = false;
+	public float attackMultiplier = 1f;
+	public float speedMultiplier = 1f;
 
 	// public float platformDropTime = 0f;
 	// public Timer platformDropTimer;
@@ -57,7 +66,7 @@ public class PlayerController : MonoBehaviour {
 		SetUpGravity(); ////////////////////////// TEMP /////////// This is only for realtime tweaking
 
 		Vector3 vel = rigidbody2D.velocity;
-		vel.x = Input.GetAxis("Horizontal") * moveSpeed;
+		vel.x = Input.GetAxis("Horizontal") * moveSpeed * speedMultiplier;
 
 		ignorePlatform = false;
 
@@ -67,7 +76,10 @@ public class PlayerController : MonoBehaviour {
 
 			// platformDropTimer.Reset();
 
-		}else if(Input.GetKey(KeyCode.Space) && (isGrounded || (!spaceBeingHeld && !isDoubleJumping && rigidbody2D.velocity.y < 0f))){ // Jump
+		}else if(Input.GetKey(KeyCode.Space) && (isGrounded || 
+			(!spaceBeingHeld && !(isDoubleJumping && !canTripleJump || isTripleJumping)
+			&& rigidbody2D.velocity.y <= 0f))){ // Jump
+
 			// Jump if space is pressed and the player is either on the ground, or has released space previously, hasn't double
 			//		jumped yet, and is falling. Note: player will start falling almost immediately after space is released. 
 
@@ -77,8 +89,10 @@ public class PlayerController : MonoBehaviour {
 			if(isGrounded){
 				isGrounded = false;
 				isJumping = true;
-			}else{
+			}else if(!isDoubleJumping){
 				isDoubleJumping = true;
+			}else if(!isTripleJumping){
+				isTripleJumping = true;
 			}
 
 		}else if(Input.GetKeyUp(KeyCode.Space)/* && vel.y > 0f*/){ // Stop jumping if player is moving up still
@@ -101,11 +115,12 @@ public class PlayerController : MonoBehaviour {
 			ThrowShuriken();
 			SetAnimationState(PlayerState.Attacking, nDirFacing);
 
-		}else if(isJumping || isDoubleJumping){
-			// if(vel.y < -Physics2D.gravity.magnitude*rigidbody2D.gravityScale * 0.5f) 
-			//		SetAnimationState(PlayerState.Falling); // Falling for 1/2 a second
-
-			SetAnimationState(PlayerState.Jumping, nDirFacing);
+		}else if(isJumping || isDoubleJumping || isTripleJumping){
+			if(vel.y < -Physics2D.gravity.magnitude*rigidbody2D.gravityScale * airTime/2f) {
+				SetAnimationState(PlayerState.Falling, nDirFacing); // Falling
+			}else{
+				SetAnimationState(PlayerState.Jumping, nDirFacing);
+			}
 		}else if(isGrounded && Mathf.Abs(vel.x) > 0.5f){
 			SetAnimationState(PlayerState.Running, nDirFacing);
 		}else{
@@ -162,6 +177,7 @@ public class PlayerController : MonoBehaviour {
 			isGrounded = true;
 			isJumping = false;
 			isDoubleJumping = false;
+			isTripleJumping = false;
 			Debug.DrawLine(transform.position, hit.point, Color.green);
 		}else{
 			isGrounded = false;
@@ -172,6 +188,10 @@ public class PlayerController : MonoBehaviour {
 	void Die(){
 		Game.main.PlayerDeath();
 		isDead = true;
+		SetAnimationState(PlayerState.Dead, dirFacing);
+
+		rigidbody2D.AddForce(Vector2.up * 50f / Time.deltaTime); // Mario death
+		collider2D.enabled = false;
 	}
 
 	void TakeDamage(float amt){
@@ -179,21 +199,17 @@ public class PlayerController : MonoBehaviour {
 		// NEEDS FEEDBACK
 		// rigidbody2D.AddForce((Vector2.up * 10f - rigidbody2D.velocity * 30f) / Time.deltaTime);
 
+		Game.main.CreateBlamo(transform.position, amt);
 		if(!isDead && health <= 0f) Die(); // Die if necessary but don't die too much
 	}
 
 	void Attack(){
 		Vector2 castBoxSize = collider2D.bounds.extents*2f; // Size of player
-		RaycastHit2D[] hits = Physics2D.BoxCastAll(transform.position, castBoxSize, 0, Vector2.right * (float)dirFacing, maxAttackDist, LayerMask.GetMask("Enemy"));
+		RaycastHit2D[] hits = Physics2D.BoxCastAll(transform.position, castBoxSize, 0, Vector2.right * (float)dirFacing, maxAttackDist/*, LayerMask.GetMask("Enemy")*/);
 		if(hits.Length > 0){
 			foreach(RaycastHit2D hit in hits){
-				if(hit.rigidbody) hit.rigidbody.AddForce(Vector2.right * (float)dirFacing * 50f / Time.deltaTime);
-				hit.collider.gameObject.SendMessage("TakeDamage", 50f);
-
-				Blamo blamo = ((GameObject)Instantiate(blamoPrefab, hit.collider.transform.position, Quaternion.identity)).GetComponent<Blamo>();
-				blamo.lifeTime = 2f;
-				blamo.explodeTime = 0.25f;
-				blamo.explodeScale = 1.3f;
+				if(hit.rigidbody) hit.rigidbody.AddForce(Vector2.right * (float)dirFacing * 50f / Time.deltaTime * attackMultiplier);
+				hit.collider.gameObject.SendMessage("TakeDamage", 50f * attackMultiplier, SendMessageOptions.DontRequireReceiver);
 			}
 		}
 	}
@@ -224,8 +240,14 @@ public class PlayerController : MonoBehaviour {
 			case PlayerState.Jumping:
 				animator.Play("jump");
 				break;
+			case PlayerState.Falling:
+				animator.Play("fall");
+				break;
 			case PlayerState.Attacking:
 				animator.Play("attack");
+				break;
+			case PlayerState.Dead:
+				animator.Play("damage");
 				break;
 		}
 

@@ -5,6 +5,7 @@ public enum EnemyState {
 	Idle,
 	Running, 
 	Jumping,
+	Attacking,
 	Throwing,
 };
 
@@ -14,17 +15,23 @@ public class Enemy : MonoBehaviour {
 	public float attack = 10f;
 	public float attackRate = 3f; // Hz
 
+	private Timer attackTimer;
+
 	public bool isDead = false;
+	public bool isAttacking = false;
 	public bool ignorePlatform = false;
 
-	public GameObject deathProxy;
+	public GameObject deathSpawnPrefab;
 
 	protected Animator animator;
+	private Timer animationTimer;
 	protected EnemyState state = EnemyState.Idle;
 	protected short dirFacing = 1;
 
 	protected virtual void Start () {
 		animator = gameObject.GetComponent<Animator>();
+		animationTimer = gameObject.AddComponent<Timer>();
+		attackTimer = gameObject.AddComponent<Timer>();
 	}
 	
 	protected virtual void Update () {
@@ -35,18 +42,28 @@ public class Enemy : MonoBehaviour {
 		}
 		
 		if(transform.position.y < Game.main.currentLevel.deathLevel) Die();
+
+		if(attackTimer > 1f/attackRate){
+			isAttacking = false;
+		}else if(isAttacking){
+			SetAnimationState(EnemyState.Attacking, dirFacing);
+		}
 	}
 
 	protected void Die(){
 		Game.main.EnemyDeath();
-		if(deathProxy) Instantiate(deathProxy, transform.position, Quaternion.identity);
+		if(deathSpawnPrefab) Instantiate(deathSpawnPrefab, transform.position, Quaternion.identity); // For particle effects and such
 		isDead = true;
-		Destroy(gameObject);
+
+		(gameObject.AddComponent<DeathProxy>()).deathTime = 2f; // Destroy gameobject after 2 seconds
+		if(rigidbody2D) rigidbody2D.velocity = Vector2.up * 10f;
 	}
 
-	protected void TakeDamage(float amt){
-		health -= amt;
+	protected void TakeDamage(float dmg){
+		health -= dmg;
 		if(!isDead && health <= 0f) Die(); // Die if necessary but don't die too much
+
+		Game.main.CreateBlamo(transform.position, dmg);
 	}
 
 	protected Vector2 DistToPlayer(){
@@ -63,7 +80,11 @@ public class Enemy : MonoBehaviour {
 	}
 
 	protected virtual void Attack(GameObject player){
-
+		isAttacking = true;
+		if(attackTimer < 1f/attackRate) return;
+		
+		player.SendMessage("TakeDamage", attack, SendMessageOptions.DontRequireReceiver);
+		attackTimer.Reset();
 	}
 
 	void OnCollisionEnter2D(Collision2D col){
@@ -80,7 +101,13 @@ public class Enemy : MonoBehaviour {
 	}
 
 	protected void SetAnimationState(EnemyState newState, short newDirFacing){
-		if(state == newState && dirFacing == newDirFacing) return;
+		if(!animator) return;
+		AnimatorStateInfo asi = animator.GetCurrentAnimatorStateInfo(0);
+
+		// If the animation doesn't loop, wait until it finishes
+		if((!asi.loop && animationTimer < asi.length) || state == newState && dirFacing == newDirFacing) return;
+		animationTimer.Reset();
+
 		state = newState;
 		dirFacing = newDirFacing;
 
@@ -93,6 +120,9 @@ public class Enemy : MonoBehaviour {
 				break;
 			case EnemyState.Jumping:
 				animator.Play("jump");
+				break;
+			case EnemyState.Attacking:
+				animator.Play("attack");
 				break;
 
 			default:

@@ -13,13 +13,10 @@ public class Enemy_Advanced : Enemy {
 	public bool isGrounded = false;
 	public bool isJumping = false;
 
-	private Timer attackTimer;
-
 	private Vector2 velocity;
 
 	protected override void Start () {
 		base.Start();
-		attackTimer = gameObject.AddComponent<Timer>();
 
 		SetUpGravity();
 	}
@@ -52,14 +49,9 @@ public class Enemy_Advanced : Enemy {
 		}
 	}
 
-	protected override void Attack(GameObject player){
-		if(attackTimer < 1f/attackRate) return;
-		
-		player.SendMessage("TakeDamage", attack, SendMessageOptions.DontRequireReceiver);
-		attackTimer.Reset();
-	}
-
 	void MoveTowardsPlayer(){
+		if(isAttacking) return;
+
 		velocity = rigidbody2D.velocity;
 		Vector2 playerPos = Game.main.player.transform.position;
 		float heightDiff = playerPos.y - transform.position.y;
@@ -85,8 +77,8 @@ public class Enemy_Advanced : Enemy {
 		if(Mathf.Abs(playerPos.x - transform.position.x) < collider2D.bounds.extents.x){
 			velocity.x = 0f;
 		}else if(WalkableAhead()){
-			// velocity.x = (GetDirToPlayer() * moveSpeed + velocity.x*2f)/3f;
-			velocity.x += (GetDirToPlayer() * moveSpeed - velocity.x)*0.5f;
+			velocity.x = GetDirToPlayer() * moveSpeed;
+			// velocity.x += (GetDirToPlayer() * moveSpeed - velocity.x)*1f;
 		}else{
 			velocity.x = 0; //GetDirToPlayer() * moveSpeed;
 		}
@@ -124,7 +116,7 @@ public class Enemy_Advanced : Enemy {
 	bool JumpablePlatformBelow(){
 		Vector2 jumpPeakPosition = (Vector2)transform.position 
 			- Vector2.up * collider2D.bounds.extents.y*1.01f
-			+ Vector2.right * maxHeightJumpDistance * GetDirToPlayer();
+			+ Vector2.right * velocity.x * Time.deltaTime;
 		return CheckFloorAt(jumpPeakPosition) < jumpHeight*2f;
 	}
 
