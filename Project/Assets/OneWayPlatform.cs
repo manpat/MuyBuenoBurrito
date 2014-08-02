@@ -10,7 +10,7 @@ public class OneWayPlatform : MonoBehaviour {
 		Vector2 thisScale = collider2D.bounds.extents;
 		float platformTop = transform.position.y + thisScale.y;
 
-		Collider2D[] colliders = Physics2D.OverlapAreaAll((Vector2)transform.position - thisScale*0.7f, (Vector2)transform.position + thisScale*0.7f);
+		Collider2D[] colliders = Physics2D.OverlapAreaAll((Vector2)transform.position - thisScale*2f*0.7f, (Vector2)transform.position + thisScale*2f*0.7f);
 		foreach(Collider2D c in colliders){
 			if(c == collider2D || c.rigidbody2D == null) continue;
 
@@ -27,8 +27,8 @@ public class OneWayPlatform : MonoBehaviour {
 		float playerBottom = Game.main.player.transform.position.y - Game.main.player.collider2D.bounds.extents.y;
 
 		Debug.DrawLine(new Vector3(-1000, playerBottom), new Vector3(1000, playerBottom));
-		Debug.DrawLine(new Vector3(transform.position.x-collider2D.bounds.extents.x, platformTop), 
-					new Vector3(transform.position.x+collider2D.bounds.extents.x, platformTop));
+		Debug.DrawLine(new Vector3(transform.position.x-thisScale.x, platformTop), 
+					new Vector3(transform.position.x+thisScale.x, platformTop));
 
 		Physics2D.IgnoreCollision(collider2D, Game.main.player.collider2D, (playerBottom < platformTop || Game.main.player.ignorePlatform));
 	}
