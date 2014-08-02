@@ -39,6 +39,7 @@ public class PlayerController : MonoBehaviour {
 	public float maxAttackDist = 2f;
 
 	public GameObject shurikenPrefab;
+	public GameObject blamoPrefab;
 
 	// public float platformDropTime = 0f;
 	// public Timer platformDropTimer;
@@ -188,6 +189,11 @@ public class PlayerController : MonoBehaviour {
 			foreach(RaycastHit2D hit in hits){
 				if(hit.rigidbody) hit.rigidbody.AddForce(Vector2.right * (float)dirFacing * 50f / Time.deltaTime);
 				hit.collider.gameObject.SendMessage("TakeDamage", 50f);
+
+				Blamo blamo = ((GameObject)Instantiate(blamoPrefab, hit.collider.transform.position, Quaternion.identity)).GetComponent<Blamo>();
+				blamo.lifeTime = 2f;
+				blamo.explodeTime = 0.25f;
+				blamo.explodeScale = 1.3f;
 			}
 		}
 	}
@@ -199,7 +205,10 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void SetAnimationState(PlayerState newState, short newDirFacing){
-		if(animationTimer < 0.1f || state == newState && dirFacing == newDirFacing) return;
+		AnimatorStateInfo asi = animator.GetCurrentAnimatorStateInfo(0);
+
+		// If the animation doesn't loop, wait until it finishes
+		if((!asi.loop && animationTimer < asi.length) || state == newState && dirFacing == newDirFacing) return;
 		animationTimer.Reset();
 
 		state = newState;
@@ -216,7 +225,7 @@ public class PlayerController : MonoBehaviour {
 				animator.Play("jump");
 				break;
 			case PlayerState.Attacking:
-				animator.Play("jump");
+				animator.Play("attack");
 				break;
 		}
 
