@@ -26,5 +26,7 @@ public class Crate : MonoBehaviour {
 	void Break(){
 		// Spawn proxy for particle effect
 		Destroy(gameObject);
+		// Spawn Pickup
+
 	}
 }
