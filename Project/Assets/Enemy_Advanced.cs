@@ -37,15 +37,16 @@ public class Enemy_Advanced : Enemy {
 			nDirFacing = (short)Mathf.Sign(velocity.x);
 		}
 
-		if(isJumping/* || isDoubleJumping*/){
-			// if(velocity.y < -Physics2D.gravity.magnitude*rigidbody2D.gravityScale * 0.5f) 
-					// SetAnimationState(EnemyState.Falling); // Falling for 1/2 a second
-
-			// SetAnimationState(EnemyState.Jumping, nDirFacing);
-		}else if(isGrounded && Mathf.Abs(velocity.x) > 0.5f){
-			SetAnimationState(EnemyState.Running, nDirFacing);
-		}else{
-			SetAnimationState(EnemyState.Idle, nDirFacing);
+		if(!isAttacking){
+			if(velocity.y < -Physics2D.gravity.magnitude*rigidbody2D.gravityScale * airTime/4f) {
+				SetAnimationState(EnemyState.Falling, nDirFacing); // Falling
+			}else if(isJumping){
+				SetAnimationState(EnemyState.Jumping, nDirFacing);
+			}else if(isGrounded && Mathf.Abs(velocity.x) > 0.5f){
+				SetAnimationState(EnemyState.Running, nDirFacing);
+			}else{
+				SetAnimationState(EnemyState.Idle, nDirFacing);
+			}
 		}
 	}
 
@@ -59,7 +60,7 @@ public class Enemy_Advanced : Enemy {
 
 		ignorePlatform = false;
 		if(heightDiff > myHeight*0.5f && JumpablePlatformAbove()){
-			if(isGrounded /*&& !isJumping*/){
+			if(isGrounded && !isJumping){
 				velocity.y = initialJumpVelocity;
 	
 				isJumping = true;
@@ -101,27 +102,32 @@ public class Enemy_Advanced : Enemy {
 	}
 
 	bool WalkableAhead(){
-		Vector2 forwardPos = (Vector2)transform.position 
+		float bottom = transform.position.y-collider2D.bounds.center.y;
+		Vector2 forwardPos = (Vector2)transform.position
+			- Vector2.up * bottom 
 			+ Vector2.right * GetDirToPlayer() * collider2D.bounds.extents.x;
 		return CheckFloorAt(forwardPos) < jumpHeight;
 	}
 
 	bool JumpablePlatformAbove(){
+		float bottom = transform.position.y-collider2D.bounds.center.y;
 		Vector2 jumpPeakPosition = (Vector2)transform.position 
-			+ Vector2.up * jumpHeight 
+			+ Vector2.up * (jumpHeight - bottom)
 			+ Vector2.right * maxHeightJumpDistance * GetDirToPlayer();
 		return CheckFloorAt(jumpPeakPosition) < jumpHeight;
 	}
 
 	bool JumpablePlatformBelow(){
+		float bottom = transform.position.y-collider2D.bounds.center.y;
 		Vector2 jumpPeakPosition = (Vector2)transform.position 
-			- Vector2.up * collider2D.bounds.extents.y*1.01f
+			- Vector2.up * (collider2D.bounds.extents.y*1.01f + bottom)
 			+ Vector2.right * velocity.x * Time.deltaTime;
 		return CheckFloorAt(jumpPeakPosition) < jumpHeight*2f;
 	}
 
 	void CheckHeight(){
-		if(CheckFloorAt((Vector2)transform.position) <= (collider2D.bounds.extents.y + 0.1f)){ // If raycast returned something and distance is <= height/2
+		float bottom = collider2D.bounds.extents.y+(transform.position.y-collider2D.bounds.center.y);
+		if(CheckFloorAt((Vector2)transform.position) <= (bottom + 0.1f)){ // If raycast returned something and distance is <= height/2
 			// on ground
 			isGrounded = true;
 			isJumping = false;

@@ -8,6 +8,7 @@ public class Game : MonoBehaviour {
 	public PlayerController player;
 
 	public GameObject blamoPrefab;
+	public GameObject[] pickupPrefabs;
 
 	public Level currentLevel;
 
@@ -33,6 +34,10 @@ public class Game : MonoBehaviour {
 		blamo.explodeTime = 0.25f;
 		blamo.explodeScale = 0.5f + dmg/50f;
 		return blamo;
+	}
+
+	public void CreateRandomPickup(Vector2 pos){
+		Instantiate(pickupPrefabs[Random.Range(0, pickupPrefabs.Length-1)], pos, Quaternion.identity);
 	}
 
 	public void RespawnPlayer(){

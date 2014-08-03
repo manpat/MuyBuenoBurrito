@@ -38,10 +38,6 @@ public class OneWayPlatform : MonoBehaviour {
 		renderer.material.color = new Color(grey, grey, grey);
 	}
 
-	void OnDrawGizmos(){
-		// ModifyMaterial();
-	}
-
 	void OnDrawGizmosSelected(){
 		Gizmos.color = Color.green;	
 		Gizmos.DrawWireCube(transform.position, collider2D.bounds.extents*4f*0.7f);

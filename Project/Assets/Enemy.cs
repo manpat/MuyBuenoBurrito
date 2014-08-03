@@ -5,6 +5,7 @@ public enum EnemyState {
 	Idle,
 	Running, 
 	Jumping,
+	Falling,
 	Attacking,
 	Throwing,
 };
@@ -81,7 +82,7 @@ public class Enemy : MonoBehaviour {
 
 	protected virtual void Attack(GameObject player){
 		isAttacking = true;
-		if(attackTimer < 1f/attackRate) return;
+		if(isDead || attackTimer < 1f/attackRate) return;
 		
 		player.SendMessage("TakeDamage", attack, SendMessageOptions.DontRequireReceiver);
 		attackTimer.Reset();
@@ -114,15 +115,23 @@ public class Enemy : MonoBehaviour {
 		switch(newState){
 			case EnemyState.Idle:
 				animator.Play("idle");
+				print("SetAnimationState idle");
 				break;
 			case EnemyState.Running:
 				animator.Play("run");
+				print("SetAnimationState run");
 				break;
 			case EnemyState.Jumping:
 				animator.Play("jump");
+				print("SetAnimationState jump");
+				break;
+			case EnemyState.Falling:
+				animator.Play("fall");
+				print("SetAnimationState fall");
 				break;
 			case EnemyState.Attacking:
 				animator.Play("attack");
+				print("SetAnimationState attack");
 				break;
 
 			default:

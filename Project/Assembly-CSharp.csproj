@@ -46,11 +46,9 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Bean.cs" />
      <Compile Include="Assets\Blamo.cs" />
      <Compile Include="Assets\Cactus.cs" />
      <Compile Include="Assets\CameraAspectFixer.cs" />
-     <Compile Include="Assets\Chili.cs" />
      <Compile Include="Assets\Cloud.cs" />
      <Compile Include="Assets\CloudController.cs" />
      <Compile Include="Assets\Crate.cs" />
@@ -65,10 +63,14 @@
      <Compile Include="Assets\GUI\MenuScript.cs" />
      <Compile Include="Assets\Game.cs" />
      <Compile Include="Assets\Level.cs" />
-     <Compile Include="Assets\Meat.cs" />
      <Compile Include="Assets\OneWayPlatform.cs" />
+     <Compile Include="Assets\Pickups\Bean.cs" />
+     <Compile Include="Assets\Pickups\Chili.cs" />
+     <Compile Include="Assets\Pickups\Meat.cs" />
+     <Compile Include="Assets\Pickups\PickupBase.cs" />
      <Compile Include="Assets\PlayerController.cs" />
      <Compile Include="Assets\Shuriken.cs" />
+     <Compile Include="Assets\SpriteDepthFixer.cs" />
      <Compile Include="Assets\Timer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

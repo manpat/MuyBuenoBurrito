@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour {
 	private Timer animationTimer;
 	private PlayerState state = PlayerState.Idle;
 	private short dirFacing = 1;
-	private ParticleSystem particleSystem;
+	// private ParticleSystem particleSystem;
 
 	public KeyCode attackKey;
 	public KeyCode throwShurikenKey;
@@ -60,7 +60,7 @@ public class PlayerController : MonoBehaviour {
 		animationTimer = gameObject.AddComponent<Timer>();
 		// platformDropTimer = gameObject.AddComponent<Timer>();
 
-		particleSystem = gameObject.GetComponent<ParticleSystem>();
+		// particleSystem = gameObject.GetComponent<ParticleSystem>();
 	}
 	
 	void Update () {
