@@ -3,7 +3,6 @@ using System.Collections;
 
 public class OneWayPlatform : MonoBehaviour {
 	void Start(){
-		ModifyMaterial();
 	}
 
 	void Update () {
@@ -30,12 +29,7 @@ public class OneWayPlatform : MonoBehaviour {
 		Debug.DrawLine(new Vector3(transform.position.x-thisScale.x, platformTop), 
 					new Vector3(transform.position.x+thisScale.x, platformTop));
 
-		Physics2D.IgnoreCollision(collider2D, Game.main.player.collider2D, (playerBottom < platformTop || Game.main.player.ignorePlatform));
-	}
-
-	void ModifyMaterial(){
-		float grey = 1f - transform.position.z/11f;
-		renderer.material.color = new Color(grey, grey, grey);
+		Physics2D.IgnoreCollision(collider2D, Game.main.player.collider2D, (playerBottom < platformTop-0.2f || Game.main.player.ignorePlatform));
 	}
 
 	void OnDrawGizmosSelected(){

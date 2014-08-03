@@ -23,6 +23,7 @@ public class Enemy : MonoBehaviour {
 	public bool ignorePlatform = false;
 
 	public GameObject deathSpawnPrefab;
+	public float deathTime = 2f;
 
 	protected Animator animator;
 	private Timer animationTimer;
@@ -56,8 +57,9 @@ public class Enemy : MonoBehaviour {
 		if(deathSpawnPrefab) Instantiate(deathSpawnPrefab, transform.position, Quaternion.identity); // For particle effects and such
 		isDead = true;
 
-		(gameObject.AddComponent<DeathProxy>()).deathTime = 2f; // Destroy gameobject after 2 seconds
+		(gameObject.AddComponent<DeathProxy>()).deathTime = deathTime; // Destroy gameobject after 2 seconds
 		if(rigidbody2D) rigidbody2D.velocity = Vector2.up * 10f;
+		collider2D.enabled = false;
 	}
 
 	protected void TakeDamage(float dmg){
@@ -115,23 +117,23 @@ public class Enemy : MonoBehaviour {
 		switch(newState){
 			case EnemyState.Idle:
 				animator.Play("idle");
-				print("SetAnimationState idle");
+				// print("SetAnimationState idle");
 				break;
 			case EnemyState.Running:
 				animator.Play("run");
-				print("SetAnimationState run");
+				// print("SetAnimationState run");
 				break;
 			case EnemyState.Jumping:
 				animator.Play("jump");
-				print("SetAnimationState jump");
+				// print("SetAnimationState jump");
 				break;
 			case EnemyState.Falling:
 				animator.Play("fall");
-				print("SetAnimationState fall");
+				// print("SetAnimationState fall");
 				break;
 			case EnemyState.Attacking:
 				animator.Play("attack");
-				print("SetAnimationState attack");
+				// print("SetAnimationState attack");
 				break;
 
 			default:

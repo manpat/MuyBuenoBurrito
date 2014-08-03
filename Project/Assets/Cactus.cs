@@ -2,18 +2,8 @@
 using System.Collections;
 
 public class Cactus : Enemy {
-	// private Timer attackTimer;
-
 	protected override void Start () {
 		base.Start();
-		// attackTimer = gameObject.AddComponent<Timer>();
+		deathTime = 0f;
 	}
-
-	// protected override void Attack(GameObject player){
-	// 	base.Attack(player);
-	// 	// if(attackTimer < 1f/attackRate) return;
-		
-	// 	// player.SendMessage("TakeDamage", attack, SendMessageOptions.DontRequireReceiver);
-	// 	// attackTimer.Reset();
-	// }
 }

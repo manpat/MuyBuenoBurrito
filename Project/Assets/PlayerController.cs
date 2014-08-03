@@ -221,6 +221,7 @@ public class PlayerController : MonoBehaviour {
 		GameObject obj = (GameObject)Instantiate(shurikenPrefab, transform.position, Quaternion.identity);
 		Physics2D.IgnoreCollision(collider2D, obj.collider2D, true);
 		obj.rigidbody2D.velocity = Vector2.right * (float)dirFacing * 30f;
+		obj.rigidbody2D.angularVelocity = 360f * 3f;
 	}
 
 	void SetAnimationState(PlayerState newState, short newDirFacing){
