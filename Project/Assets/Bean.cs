@@ -36,6 +36,7 @@ public class Bean : MonoBehaviour {
             collider2D.enabled = false;
             renderer.enabled = false;
             Game.main.player.canTripleJump = true;
+            Game.main.player.CreateParticles(new Color(0.2f, 0.9f, 0.4f, 1f));
         }
     }
 }

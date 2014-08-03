@@ -37,6 +37,7 @@ public class Chili : MonoBehaviour {
             renderer.enabled = false;
             // needs adjusting, double speed seems too fast??
             Game.main.player.speedMultiplier = 2f;
+            Game.main.player.CreateParticles(new Color(0.9f, 0.7f, 0.2f, 1f));
         }
     }
 }

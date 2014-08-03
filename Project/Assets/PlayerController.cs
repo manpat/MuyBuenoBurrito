@@ -35,6 +35,7 @@ public class PlayerController : MonoBehaviour {
 	private Timer animationTimer;
 	private PlayerState state = PlayerState.Idle;
 	private short dirFacing = 1;
+	private ParticleSystem particleSystem;
 
 	public KeyCode attackKey;
 	public KeyCode throwShurikenKey;
@@ -58,6 +59,8 @@ public class PlayerController : MonoBehaviour {
 		animator = gameObject.GetComponent<Animator>();
 		animationTimer = gameObject.AddComponent<Timer>();
 		// platformDropTimer = gameObject.AddComponent<Timer>();
+
+		particleSystem = gameObject.GetComponent<ParticleSystem>();
 	}
 	
 	void Update () {
@@ -255,4 +258,9 @@ public class PlayerController : MonoBehaviour {
 		scale.x = dirFacing*2f;
 		transform.localScale = scale;
 	}
+
+	public void CreateParticles(Color color){
+		particleSystem.startColor = color;
+		particleSystem.Emit(100);
+	} 
 }
