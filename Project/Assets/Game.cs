@@ -58,7 +58,7 @@ public class Game : MonoBehaviour {
 	}
 	public void PlayerEndLevel(){ // Should be called when player reaches end of level
 		print("End of level");
-		Application.LoadLevel("testlevel2");
+		Application.LoadLevel("level2");
 	}
 
 	public void EnemyDeath(){ // Should be called when an enemy dies

@@ -15,7 +15,7 @@ public class OneWayPlatform : MonoBehaviour {
 			if(c == collider2D || c.rigidbody2D == null) continue;
 
 			float bottom = c.transform.position.y - c.collider2D.bounds.extents.y;
-			bool ignorePlatform = bottom < platformTop;
+			bool ignorePlatform = bottom < (platformTop-0.2f);
 
 			if(c.CompareTag("Enemy")){
 				ignorePlatform = ignorePlatform || c.GetComponent<Enemy>().ignorePlatform;
