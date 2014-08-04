@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PickupBase : MonoBehaviour {
 	public bool pickupGot = false;
-	// time effect lasts, open for changes
+	// time effect lasts 5ish secs, open for changes
 	public float effectTime = 5f;
 	public float counter;
 	
