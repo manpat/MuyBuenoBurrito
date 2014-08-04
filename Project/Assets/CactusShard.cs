@@ -17,7 +17,7 @@ public class CactusShard : MonoBehaviour {
 			col.gameObject.SendMessage("TakeDamage", 10f);
 			col.gameObject.rigidbody2D.AddForce(Vector2.up * 10f / Time.deltaTime);
 		}else if(col.gameObject.CompareTag("Enemy")){
-			col.gameObject.SendMessage("TakeDamage", 10f * (rigidbody2D.velocity.magnitude/10f + 1f));
+			col.gameObject.SendMessage("TakeDamage", 10f * (rigidbody2D.velocity.magnitude/8f + 1f));
 		}
 	}
 }

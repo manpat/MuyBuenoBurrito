@@ -26,8 +26,8 @@ public class MenuScript : MonoBehaviour {
 		Camera.main.transform.position = initPos + dir.normalized * Mathf.SmoothStep(0, dir.magnitude, slideTimer);
 	}
 
-	public void HandleButton(MenuButton button){
-		switch(button.action){
+	public void DoThing(string action){
+		switch(action){
 			case "StartGame":
 				Application.LoadLevel("level1");
 				break;
@@ -54,6 +54,10 @@ public class MenuScript : MonoBehaviour {
 
 			case "Credits":
 				SetSelectedScreen(5);
+				break;
+
+			case "Instructions4":
+				SetSelectedScreen(6);
 				break;
 
 			default:

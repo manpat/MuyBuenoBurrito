@@ -61,6 +61,7 @@
      <Compile Include="Assets\GUI\MenuButton.cs" />
      <Compile Include="Assets\GUI\MenuScreen.cs" />
      <Compile Include="Assets\GUI\MenuScript.cs" />
+     <Compile Include="Assets\GUI\MenuSprite.cs" />
      <Compile Include="Assets\Game.cs" />
      <Compile Include="Assets\Level.cs" />
      <Compile Include="Assets\OneWayPlatform.cs" />
