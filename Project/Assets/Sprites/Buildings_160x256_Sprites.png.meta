@@ -1,6 +1,11 @@
 fileFormatVersion: 2
 guid: e69efaa77d3902543be84bd5cae519e1
 TextureImporter:
+  fileIDToRecycleName:
+    21300000: Buildings_160x256_Sprites_0
+    21300002: Buildings_160x256_Sprites_1
+    21300004: Buildings_160x256_Sprites_2
+    21300006: Buildings_160x256_Sprites_3
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
