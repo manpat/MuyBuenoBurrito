@@ -49,7 +49,6 @@
      <Compile Include="Assets\Blamo.cs" />
      <Compile Include="Assets\Cactus.cs" />
      <Compile Include="Assets\CameraAspectFixer.cs" />
-     <Compile Include="Assets\Cloud.cs" />
      <Compile Include="Assets\CloudController.cs" />
      <Compile Include="Assets\Crate.cs" />
      <Compile Include="Assets\DeathProxy.cs" />

@@ -22,7 +22,6 @@ public class Enemy : MonoBehaviour {
 	public bool isAttacking = false;
 	public bool ignorePlatform = false;
 
-	public GameObject deathSpawnPrefab;
 	public float deathTime = 2f;
 
 	protected Animator animator;
@@ -54,12 +53,17 @@ public class Enemy : MonoBehaviour {
 
 	protected void Die(){
 		Game.main.EnemyDeath();
-		if(deathSpawnPrefab) Instantiate(deathSpawnPrefab, transform.position, Quaternion.identity); // For particle effects and such
 		isDead = true;
 
 		(gameObject.AddComponent<DeathProxy>()).deathTime = deathTime; // Destroy gameobject after 2 seconds
 		if(rigidbody2D) rigidbody2D.velocity = Vector2.up * 10f;
 		collider2D.enabled = false;
+
+		OnDie();
+	}
+
+	protected virtual void OnDie(){
+		// Do particle effects here
 	}
 
 	protected void TakeDamage(float dmg){
