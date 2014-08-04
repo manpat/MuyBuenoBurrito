@@ -41,6 +41,7 @@ public class PlayerController : MonoBehaviour {
 	public KeyCode throwShurikenKey;
 	public KeyCode specialKey; // for the leap?
 	public float maxAttackDist = 2f;
+	public int shurikensRemaining = 3;
 
 	public GameObject shurikenPrefab;
 	public GameObject blamoPrefab;
@@ -114,7 +115,7 @@ public class PlayerController : MonoBehaviour {
 			Attack();
 			SetAnimationState(PlayerState.Attacking, nDirFacing);
 
-		}else if(Input.GetKeyDown(throwShurikenKey)){
+		}else if(Input.GetKeyDown(throwShurikenKey) && shurikensRemaining > 0){
 			ThrowShuriken();
 			SetAnimationState(PlayerState.Attacking, nDirFacing);
 
@@ -218,10 +219,14 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void ThrowShuriken(){
+		if(shurikensRemaining <= 0) return;
+
 		GameObject obj = (GameObject)Instantiate(shurikenPrefab, transform.position, Quaternion.identity);
 		Physics2D.IgnoreCollision(collider2D, obj.collider2D, true);
 		obj.rigidbody2D.velocity = Vector2.right * (float)dirFacing * 30f;
 		obj.rigidbody2D.angularVelocity = 360f * 3f;
+
+		--shurikensRemaining;
 	}
 
 	void SetAnimationState(PlayerState newState, short newDirFacing){
