@@ -2,14 +2,17 @@
 using System.Collections;
 
 public class Cactus : Enemy {
+	public GameObject cactusJuicePickupPrefab;
 	public GameObject cactusShardPrefab;
+	public int numShardsSpawnedUponDeath = 2;
 
-	protected override void Start () {
-		base.Start();
-		deathTime = 0f;
-	}
+	protected override void OnDeath(){
+		Instantiate(cactusJuicePickupPrefab, transform.position, Quaternion.identity);
 
-	protected override void OnDie(){
-		print("Cactus dead");
+		for(int i = 0; i < numShardsSpawnedUponDeath; ++i){
+			Vector3 dir = (Vector3)Random.insideUnitCircle.normalized;
+			GameObject obj = (GameObject)Instantiate(cactusShardPrefab, transform.position + dir * 3f, Quaternion.identity);
+			obj.rigidbody2D.velocity = dir * 5f;
+		}
 	}
 }

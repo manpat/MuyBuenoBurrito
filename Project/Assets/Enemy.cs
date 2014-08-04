@@ -52,23 +52,31 @@ public class Enemy : MonoBehaviour {
 	}
 
 	protected void Die(){
-		Game.main.EnemyDeath();
+		if(isDead) return;
 		isDead = true;
+		Game.main.EnemyDeath();
 
-		(gameObject.AddComponent<DeathProxy>()).deathTime = deathTime; // Destroy gameobject after 2 seconds
 		if(rigidbody2D) rigidbody2D.velocity = Vector2.up * 10f;
 		collider2D.enabled = false;
 
-		OnDie();
+		OnDeath();
+
+		if(deathTime == 0f){
+			Destroy(gameObject);
+		}else{
+			(gameObject.AddComponent<DeathProxy>()).deathTime = deathTime; // Destroy gameobject after 2 seconds
+		}
 	}
 
-	protected virtual void OnDie(){
+	protected virtual void OnDeath(){
 		// Do particle effects here
 	}
 
 	protected void TakeDamage(float dmg){
+		if(isDead) return;
+
 		health -= dmg;
-		if(!isDead && health <= 0f) Die(); // Die if necessary but don't die too much
+		if(health <= 0f) Die(); // Die if necessary but don't die too much
 
 		Game.main.CreateBlamo(transform.position, dmg);
 	}
@@ -87,8 +95,8 @@ public class Enemy : MonoBehaviour {
 	}
 
 	protected virtual void Attack(GameObject player){
-		isAttacking = true;
 		if(isDead || attackTimer < 1f/attackRate) return;
+		isAttacking = true;
 		
 		player.SendMessage("TakeDamage", attack, SendMessageOptions.DontRequireReceiver);
 		attackTimer.Reset();
