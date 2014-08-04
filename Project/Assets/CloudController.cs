@@ -41,6 +41,7 @@ public class CloudController : MonoBehaviour {
 		Gizmos.color = Color.white;
 		Gizmos.DrawLine(new Vector3(cloudDieX, -1000f, 0f), new Vector3(cloudDieX, 1000f, 0f));
 		Gizmos.DrawLine(new Vector3(cloudSpawnX, -1000f, 0f), new Vector3(cloudSpawnX, 1000f, 0f));
+		Gizmos.DrawLine(new Vector3(-1000f, spawnHeight, 0f), new Vector3(1000f, spawnHeight, 0f));
 	}
 
 	void OnLevelWasLoaded(int lvl){
