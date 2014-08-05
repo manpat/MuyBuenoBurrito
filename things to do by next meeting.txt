@@ -17,3 +17,4 @@ Leap attack
 Make triple jump more noticeable
 Highscore table
 
+Poop
