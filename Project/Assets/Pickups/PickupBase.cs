@@ -30,6 +30,7 @@ public class PickupBase : MonoBehaviour {
 			pickupGot = true;
 			collider2D.enabled = false;
 			renderer.enabled = false;
+			Game.main.IncStat("PickupsGot");
 			ActivatePickup();
 		}
 	}

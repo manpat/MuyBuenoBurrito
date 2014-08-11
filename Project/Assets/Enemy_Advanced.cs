@@ -23,7 +23,7 @@ public class Enemy_Advanced : Enemy {
 	
 	protected override void Update () {
 		base.Update();
-		if(isDead) return;
+		if(Game.main.endOfGame || isDead) return;
 		
 		if(!isRunning){
 			isRunning = Mathf.Abs(GetDirToPlayer()) > 0f;

@@ -65,7 +65,7 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	void Update () {
-		if(isDead) return;
+		if(Game.main.endOfGame || isDead) return;
 
 		SetUpGravity(); ////////////////////////// TEMP /////////// This is only for realtime tweaking
 
@@ -203,6 +203,7 @@ public class PlayerController : MonoBehaviour {
 		// NEEDS FEEDBACK
 		// rigidbody2D.AddForce((Vector2.up * 10f - rigidbody2D.velocity * 30f) / Time.deltaTime);
 
+		Game.main.AddStat("DamageTaken", amt);
 		Game.main.CreateBlamo(transform.position, amt);
 		if(!isDead && health <= 0f) Die(); // Die if necessary but don't die too much
 	}

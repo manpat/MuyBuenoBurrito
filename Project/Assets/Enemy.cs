@@ -36,7 +36,7 @@ public class Enemy : MonoBehaviour {
 	}
 	
 	protected virtual void Update () {
-		if(isDead) return;
+		if(Game.main.endOfGame || isDead) return;
 
 		if(health <= 0f){
 			Die();
@@ -77,6 +77,7 @@ public class Enemy : MonoBehaviour {
 
 		health -= dmg;
 		if(health <= 0f) Die(); // Die if necessary but don't die too much
+		Game.main.AddStat("DamageDealt", dmg);
 
 		Game.main.CreateBlamo(transform.position, dmg);
 	}

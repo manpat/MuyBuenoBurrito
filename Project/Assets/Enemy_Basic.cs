@@ -6,7 +6,7 @@ public class Enemy_Basic : Enemy {
 	
 	protected override void Update () {
 		base.Update();
-		if(isDead) return;
+		if(Game.main.endOfGame || isDead) return;
 
 		Vector2 vel = rigidbody2D.velocity;
 		if(!isRunning){
