@@ -42,7 +42,7 @@ public class Game : MonoBehaviour {
 	}
 
 	public void CreateRandomPickup(Vector2 pos){
-		Instantiate(pickupPrefabs[Random.Range(0, pickupPrefabs.Length-1)], pos, Quaternion.identity);
+		Instantiate(pickupPrefabs[Random.Range(0, pickupPrefabs.Length)], pos, Quaternion.identity);
 	}
 
 	public void RespawnPlayer(){
