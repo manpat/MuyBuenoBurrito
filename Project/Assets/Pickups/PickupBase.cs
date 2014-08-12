@@ -6,6 +6,8 @@ public class PickupBase : MonoBehaviour {
 	// time effect lasts 5ish secs, open for changes
 	public float effectTime = 5f;
 	public float counter;
+
+	public Color tint = Color.white;
 	
 	void Update () {
 		// has the pickup been picked up?
@@ -16,6 +18,7 @@ public class PickupBase : MonoBehaviour {
 			if(counter >= effectTime)
 			{
 				DeactivatePickup();
+				Game.main.player.RemovePickupTint(tint);
 				Destroy(gameObject);
 			}
 		}

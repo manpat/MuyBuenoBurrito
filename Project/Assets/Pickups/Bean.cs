@@ -6,6 +6,7 @@ public class Bean : PickupBase {
 		print("Bean Got");
 		Game.main.player.canTripleJump = true;
 		Game.main.player.CreateParticles(new Color(0.2f, 0.9f, 0.4f, 1f));
+		Game.main.player.AddPickupTint(tint);
 	}
 
 	public override void DeactivatePickup(){

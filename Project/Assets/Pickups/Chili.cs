@@ -6,6 +6,7 @@ public class Chili : PickupBase {
 		print("Chili Got");
 		Game.main.player.speedMultiplier = 2f;
 		Game.main.player.CreateParticles(new Color(0.9f, 0.7f, 0.2f, 1f));
+		Game.main.player.AddPickupTint(tint);
 	}
 
 	public override void DeactivatePickup(){

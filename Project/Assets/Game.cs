@@ -98,10 +98,6 @@ public class Game : MonoBehaviour {
 		Gizmos.DrawSphere(Camera.main.transform.position - Vector3.up * Camera.main.orthographicSize, 0.5f);
 	}
 
-	void OnGUI(){
-		GUI.Label(new Rect(500, 250, 200, 200), CalcScore().ToString());
-	}
-
 	public void SetStat(string _name, float _amount){
 		stats[_name] = _amount;
 	}

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public enum PlayerState {
 	Idle,
@@ -14,6 +15,7 @@ public enum PlayerState {
 public class PlayerController : MonoBehaviour {
 	public float moveSpeed = 1f;
 	public float jumpHeight = 2f; // Must be initialised before SetUpGravity is called 
+	public float doubleJumpMultiplier = 1.4f;
 	public float airTime = 0.3f; // Must be initialised before SetUpGravity is called
 
 	public float sameLevelJumpDistance; // just for reference
@@ -51,17 +53,14 @@ public class PlayerController : MonoBehaviour {
 	public bool canTripleJump = false;
 	public float attackMultiplier = 1f;
 	public float speedMultiplier = 1f;
-
-	// public float platformDropTime = 0f;
-	// public Timer platformDropTimer;
+	[SerializeField] private List<Color> pickupTints = new List<Color>();
+	private Timer pickupTintTimer;
 
 	void Start () {
 		SetUpGravity();
 		animator = gameObject.GetComponent<Animator>();
 		animationTimer = gameObject.AddComponent<Timer>();
-		// platformDropTimer = gameObject.AddComponent<Timer>();
-
-		// particleSystem = gameObject.GetComponent<ParticleSystem>();
+		pickupTintTimer = gameObject.AddComponent<Timer>();
 	}
 	
 	void Update () {
@@ -87,7 +86,7 @@ public class PlayerController : MonoBehaviour {
 			// Jump if space is pressed and the player is either on the ground, or has released space previously, hasn't double
 			//		jumped yet, and is falling. Note: player will start falling almost immediately after space is released. 
 
-			vel.y = initialJumpVelocity;
+			vel.y = initialJumpVelocity * (isJumping?doubleJumpMultiplier:1f);
 			spaceBeingHeld = true;
 
 			if(isGrounded){
@@ -133,6 +132,7 @@ public class PlayerController : MonoBehaviour {
 
 		CheckHeight();
 		MoveCamera();
+		DoPickupTint();
 	}
 
 	void SetUpGravity(){
@@ -225,7 +225,7 @@ public class PlayerController : MonoBehaviour {
 		GameObject obj = (GameObject)Instantiate(shurikenPrefab, transform.position, Quaternion.identity);
 		Physics2D.IgnoreCollision(collider2D, obj.collider2D, true);
 		obj.rigidbody2D.velocity = Vector2.right * (float)dirFacing * 30f;
-		obj.rigidbody2D.angularVelocity = 360f * 3f;
+		obj.rigidbody2D.angularVelocity = -360f * 3f;
 
 		--shurikensRemaining;
 	}
@@ -266,8 +266,34 @@ public class PlayerController : MonoBehaviour {
 		transform.localScale = scale;
 	}
 
+	void DoPickupTint(){
+		if(pickupTints.Count == 0) {
+			renderer.material.color = Color.white;
+			return;
+		}
+
+		Color tint = Color.white;
+		int count = pickupTints.Count;
+
+		int idx1 = Mathf.FloorToInt(pickupTintTimer) % count;
+		int idx2 = Mathf.FloorToInt(pickupTintTimer+1) % count;
+		float a = pickupTintTimer - Mathf.FloorToInt(pickupTintTimer);
+
+		Color c1 = pickupTints[idx1];
+		Color c2 = pickupTints[idx2];
+
+		renderer.material.color = Color.Lerp(c1, c2, a);
+	}
+
 	public void CreateParticles(Color color){
 		particleSystem.startColor = color;
-		particleSystem.Emit(100);
+		particleSystem.Emit(500);
 	} 
+
+	public void AddPickupTint(Color color){
+		pickupTints.Add(color);
+	}
+	public void RemovePickupTint(Color color){
+		pickupTints.RemoveAll(x => (x == color));
+	}
 }
