@@ -1,6 +1,8 @@
 fileFormatVersion: 2
-guid: ca89cf3e9358f9c4f9f273ab9c766274
+guid: 95463b9453d1e9040a382de1d409dbe3
 TextureImporter:
+  fileIDToRecycleName:
+    21300000: nacho_sprite
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0

@@ -1,6 +1,23 @@
 fileFormatVersion: 2
 guid: d7d3238dee7314d47b98f7a997f6f136
 TextureImporter:
+  fileIDToRecycleName:
+    21300000: ninja_sprites_0
+    21300002: ninja_sprites_1
+    21300004: ninja_sprites_2
+    21300006: ninja_sprites_3
+    21300008: ninja_sprites_4
+    21300010: ninja_sprites_5
+    21300012: ninja_sprites_6
+    21300014: ninja_sprites_7
+    21300016: ninja_sprites_8
+    21300018: ninja_sprites_9
+    21300020: ninja_sprites_10
+    21300022: ninja_sprites_11
+    21300024: ninja_sprites_16
+    21300026: ninja_sprites_17
+    21300028: ninja_sprites_18
+    21300030: ninja_sprites_19
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
