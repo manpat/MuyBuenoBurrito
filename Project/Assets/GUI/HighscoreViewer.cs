@@ -28,7 +28,7 @@ public class HighscoreViewer : MonoBehaviour {
 			mr.material.color = color;
 
 			scoreList[i] = obj.AddComponent<TextMesh>();
-			scoreList[i].text = data[i].name + " ======== " + Mathf.Ceil(data[i].score).ToString();
+			scoreList[i].text = BuildString(data[i]);
 			scoreList[i].font = font;
 			scoreList[i].fontSize = 150;
 			scoreList[i].characterSize = 0.05f;
@@ -39,5 +39,9 @@ public class HighscoreViewer : MonoBehaviour {
 
 			y -= decrement;
 		}
+	}
+
+	public static string BuildString(HighscoreData dat){
+		return dat.name + " " + new string('=', 5) + " " + Mathf.Ceil(dat.score).ToString();
 	}
 }

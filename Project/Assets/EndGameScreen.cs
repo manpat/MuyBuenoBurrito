@@ -40,7 +40,7 @@ public class EndGameScreen : MonoBehaviour {
 			mr.material.color = color;
 
 			scoreList[i] = obj.AddComponent<TextMesh>();
-			scoreList[i].text = hd[i].name + " ======== " + Mathf.Ceil(hd[i].score).ToString();
+			scoreList[i].text = HighscoreViewer.BuildString(hd[i]);
 			scoreList[i].font = font;
 			scoreList[i].fontSize = 150;
 			scoreList[i].characterSize = 0.05f;
@@ -59,7 +59,7 @@ public class EndGameScreen : MonoBehaviour {
 	void Update(){
 		if(posInHighscores == -1) return;
 
-		scoreList[posInHighscores].text = "<color=\"red\">"+playerHighscore.name + "</color> ======== " + Mathf.Ceil(playerHighscore.score).ToString();
+		scoreList[posInHighscores].text = "<color=\"red\">"+playerHighscore.name + "</color> " + new string('=', 5) + " " + Mathf.Ceil(playerHighscore.score).ToString();
 	}
 
 	void OnGUI(){
@@ -72,7 +72,7 @@ public class EndGameScreen : MonoBehaviour {
 				HighscoreManager.SaveHighscoreData(playerHighscore);
 				Application.LoadLevel("menu");
 
-			}else if((int)e.character > 10 && e.character != ','){ // Not return
+			}else if((int)e.character > 10 && e.character != ',' && playerHighscore.name.Length < 25){ // Not return
 				playerHighscore.name += e.character;
 				print((int)e.character);
 			}
