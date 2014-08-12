@@ -40,7 +40,7 @@ public class EndGameScreen : MonoBehaviour {
 			mr.material.color = color;
 
 			scoreList[i] = obj.AddComponent<TextMesh>();
-			scoreList[i].text = HighscoreViewer.BuildString(hd[i]);
+			scoreList[i].text = hd[i].name + new string('=', 5) + " " + Mathf.Ceil(hd[i].score).ToString();
 			scoreList[i].font = font;
 			scoreList[i].fontSize = 150;
 			scoreList[i].characterSize = 0.05f;
