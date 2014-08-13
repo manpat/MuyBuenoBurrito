@@ -45,6 +45,13 @@ public class PlayerController : MonoBehaviour {
 	public float maxAttackDist = 2f;
 	public int shurikensRemaining = 3;
 
+	private bool isLeaping = false;
+	private Timer leapTimer;
+	private Vector3 leapToPos;
+	public float leapCooldown = 2f;
+	public float leapDist = 2f;
+	public float leapDamage = 100f;
+
 	public GameObject shurikenPrefab;
 	public GameObject blamoPrefab;
 
@@ -61,12 +68,25 @@ public class PlayerController : MonoBehaviour {
 		animator = gameObject.GetComponent<Animator>();
 		animationTimer = gameObject.AddComponent<Timer>();
 		pickupTintTimer = gameObject.AddComponent<Timer>();
+		leapTimer = gameObject.AddComponent<Timer>();
 	}
 	
 	void Update () {
 		if(Game.main.endOfGame || isDead) return;
 
-		SetUpGravity(); ////////////////////////// TEMP /////////// This is only for realtime tweaking
+		// SetUpGravity(); ////////////////////////// TEMP /////////// This is only for realtime tweaking
+
+		if(isLeaping){
+			Vector3 diff = (leapToPos - transform.position);
+			// transform.position += diff.normalized * Time.deltaTime * leapDist * 8f; 
+			rigidbody2D.velocity = diff.normalized * leapDist * 8f; 
+			if(diff.magnitude <= leapDist * 0.1f) isLeaping = false;
+
+			CheckHeight();
+			MoveCamera();
+			DoPickupTint();
+			return;
+		}
 
 		Vector3 vel = rigidbody2D.velocity;
 		vel.x = Input.GetAxis("Horizontal") * moveSpeed * speedMultiplier;
@@ -118,8 +138,12 @@ public class PlayerController : MonoBehaviour {
 			ThrowShuriken();
 			SetAnimationState(PlayerState.Attacking, nDirFacing);
 
+		}else if(Input.GetKeyDown(specialKey) && leapTimer > leapCooldown){
+			LeapAttack();
+			SetAnimationState(PlayerState.Jumping, nDirFacing);
+
 		}else if(isJumping || isDoubleJumping || isTripleJumping){
-			if(vel.y < -Physics2D.gravity.magnitude*rigidbody2D.gravityScale * airTime/2f) {
+			if(vel.y < -Physics2D.gravity.magnitude*rigidbody2D.gravityScale * airTime/3f) {
 				SetAnimationState(PlayerState.Falling, nDirFacing); // Falling
 			}else{
 				SetAnimationState(PlayerState.Jumping, nDirFacing);
@@ -230,6 +254,26 @@ public class PlayerController : MonoBehaviour {
 		--shurikensRemaining;
 	}
 
+	void LeapAttack(){
+		Vector2 boxcastSize = collider2D.bounds.extents*3f;
+
+		float angle = Mathf.PI/18f;
+
+		if(!isGrounded) angle = -angle/4f;
+
+		Vector3 dir = Vector3.right * (float)dirFacing * Mathf.Cos(angle) + Vector3.up * Mathf.Sin(angle);
+
+		RaycastHit2D[] hits = Physics2D.BoxCastAll(transform.position, boxcastSize, 0f, dir, leapDist, LayerMask.GetMask("Enemy", "Crates"));
+		foreach(RaycastHit2D hit in hits){
+			if(hit.rigidbody) hit.rigidbody.AddForce(Vector2.up * 10f / Time.deltaTime * attackMultiplier);
+			hit.collider.gameObject.SendMessage("TakeDamage", leapDamage/(float)hits.Length * attackMultiplier, SendMessageOptions.DontRequireReceiver);
+		}
+
+		leapToPos = transform.position + dir * leapDist;
+		isLeaping = true;
+		leapTimer.Reset();
+	}
+
 	void SetAnimationState(PlayerState newState, short newDirFacing){
 		AnimatorStateInfo asi = animator.GetCurrentAnimatorStateInfo(0);
 
@@ -264,6 +308,12 @@ public class PlayerController : MonoBehaviour {
 		Vector3 scale = transform.localScale;
 		scale.x = dirFacing*2f;
 		transform.localScale = scale;
+	}
+
+	void OnCollisionEnter2D(Collision2D col){
+		if(isLeaping) {
+			isLeaping = false;
+		}
 	}
 
 	void DoPickupTint(){

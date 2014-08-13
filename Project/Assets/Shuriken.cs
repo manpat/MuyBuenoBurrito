@@ -12,7 +12,7 @@ public class Shuriken : MonoBehaviour {
 		if(deathTimer > 20f) Die();
 	}
 
-	void OnCollisionEnter2D(Collision2D col){
+	void OnTriggerEnter2D(Collider2D col){
 		if(col.gameObject.CompareTag("Enemy")){
 			col.gameObject.SendMessage("TakeDamage", 100f);
 

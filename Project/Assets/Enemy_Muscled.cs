@@ -91,9 +91,10 @@ public class Enemy_Muscled : Enemy {
 			heldObjectThrown = false;
 
 			return;
-		}else if(animationTimer <= asi.length*throwPoint){
+		}else if(animationTimer <= asi.length*throwPoint && heldObject != null){
 			heldObject.transform.position = transform.position + Vector3.up * collider2D.bounds.extents.y*2f;
-		}else if(!heldObjectThrown && animationTimer > asi.length*throwPoint){
+
+		}else if(!heldObjectThrown && animationTimer > asi.length*throwPoint && heldObject != null){
 			heldObjectThrown = true;
 
 			Vector3 forceDir = Vector3.zero;
