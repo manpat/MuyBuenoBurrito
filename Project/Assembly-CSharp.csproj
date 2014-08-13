@@ -65,6 +65,7 @@
      <Compile Include="Assets\GUI\MenuScreen.cs" />
      <Compile Include="Assets\GUI\MenuScript.cs" />
      <Compile Include="Assets\GUI\MenuSprite.cs" />
+     <Compile Include="Assets\GUI\PlayerUI.cs" />
      <Compile Include="Assets\Game.cs" />
      <Compile Include="Assets\HighscoreManager.cs" />
      <Compile Include="Assets\Level.cs" />

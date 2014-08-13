@@ -319,6 +319,8 @@ public class PlayerController : MonoBehaviour {
 	void DoPickupTint(){
 		if(pickupTints.Count == 0) {
 			renderer.material.color = Color.white;
+			PlayerUI.SetVignetteIntensity(0f);
+			PlayerUI.SetVignetteColor(Color.white);
 			return;
 		}
 
@@ -330,8 +332,11 @@ public class PlayerController : MonoBehaviour {
 
 		Color c1 = pickupTints[idx1];
 		Color c2 = pickupTints[idx2];
+		Color c = Color.Lerp(c1, c2, a);
 
-		renderer.material.color = Color.Lerp(c1, c2, a);
+		renderer.material.color = c;
+		PlayerUI.SetVignetteColor(c);
+		PlayerUI.SetVignetteIntensity(Mathf.PingPong(pickupTintTimer, 0.8f)+0.2f);
 	}
 
 	public void CreateParticles(Color color){
