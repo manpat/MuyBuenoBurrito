@@ -16,7 +16,7 @@ public class Enemy : MonoBehaviour {
 	public float attack = 10f;
 	public float attackRate = 3f; // Hz
 
-	private Timer attackTimer;
+	protected Timer attackTimer;
 
 	public bool isDead = false;
 	public bool isAttacking = false;
@@ -25,7 +25,7 @@ public class Enemy : MonoBehaviour {
 	public float deathTime = 2f;
 
 	protected Animator animator;
-	private Timer animationTimer;
+	protected Timer animationTimer;
 	protected EnemyState state = EnemyState.Idle;
 	protected short dirFacing = 1;
 
@@ -116,12 +116,12 @@ public class Enemy : MonoBehaviour {
 		}
 	}
 
-	protected void SetAnimationState(EnemyState newState, short newDirFacing){
+	protected void SetAnimationState(EnemyState newState, short newDirFacing, bool forceChange = false){
 		if(!animator) return;
 		AnimatorStateInfo asi = animator.GetCurrentAnimatorStateInfo(0);
 
-		// If the animation doesn't loop, wait until it finishes
-		if((!asi.loop && animationTimer < asi.length) || state == newState && dirFacing == newDirFacing) return;
+		// If the animation doesn't loop, wait until it finishes unless forceChange is set
+		if((!asi.loop && animationTimer < asi.length && !forceChange) || state == newState && dirFacing == newDirFacing) return;
 		animationTimer.Reset();
 
 		state = newState;
@@ -147,6 +147,10 @@ public class Enemy : MonoBehaviour {
 			case EnemyState.Attacking:
 				animator.Play("attack");
 				// print("SetAnimationState attack");
+				break;
+			case EnemyState.Throwing:
+				animator.Play("throw");
+				// print("SetAnimationState throw");
 				break;
 
 			default:

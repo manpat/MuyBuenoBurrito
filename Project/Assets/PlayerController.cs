@@ -272,7 +272,6 @@ public class PlayerController : MonoBehaviour {
 			return;
 		}
 
-		Color tint = Color.white;
 		int count = pickupTints.Count;
 
 		int idx1 = Mathf.FloorToInt(pickupTintTimer) % count;

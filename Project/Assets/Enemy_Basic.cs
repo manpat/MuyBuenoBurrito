@@ -3,11 +3,16 @@ using System.Collections;
 
 public class Enemy_Basic : Enemy {
 	public bool isRunning = false;
+	private bool isBeingThrown = false;
 	
 	protected override void Update () {
 		base.Update();
 		if(Game.main.endOfGame || isDead) return;
 
+		if(isBeingThrown){
+			UpdateBeingThrown();
+			return;
+		}
 		Vector2 vel = rigidbody2D.velocity;
 		if(!isRunning){
 			isRunning = Mathf.Abs(GetDirToPlayer()) > 0f;
@@ -27,5 +32,28 @@ public class Enemy_Basic : Enemy {
 		}else{
 			SetAnimationState(EnemyState.Idle, nDirFacing);
 		}
+	}
+
+	private void UpdateBeingThrown(){
+
+	}
+
+	public void Throw(){
+		if(isBeingThrown) return;
+		print("Enemy_Basic throw");
+
+		isBeingThrown = true;
+		ignorePlatform = true;
+		SetAnimationState(EnemyState.Throwing, (short)GetDirToPlayer(), true);
+	}
+
+	protected override void Attack(GameObject player){
+		if(!isBeingThrown){
+			base.Attack(player);
+			return;
+		}
+
+		player.SendMessage("TakeDamage", attack, SendMessageOptions.DontRequireReceiver);
+		attackTimer.Reset();
 	}
 }

@@ -58,6 +58,7 @@
      <Compile Include="Assets\Enemy.cs" />
      <Compile Include="Assets\Enemy_Advanced.cs" />
      <Compile Include="Assets\Enemy_Basic.cs" />
+     <Compile Include="Assets\Enemy_Muscled.cs" />
      <Compile Include="Assets\GUI\GUI_Bar.cs" />
      <Compile Include="Assets\GUI\HighscoreViewer.cs" />
      <Compile Include="Assets\GUI\MenuButton.cs" />
