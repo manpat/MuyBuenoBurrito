@@ -24,7 +24,14 @@ public class PlayerController : MonoBehaviour {
 
 	public bool ignorePlatform = false;
 
-	public float health = 100f;
+	private float _health = 100f;
+	public float health {
+		get{ return _health; }
+		set{
+			_health = value;;
+			PlayerUI.SetHealthbarValue(_health/100f);
+		}
+	}
 
 	public bool isGrounded = true;
 	public bool isJumping = false;
@@ -69,10 +76,13 @@ public class PlayerController : MonoBehaviour {
 		animationTimer = gameObject.AddComponent<Timer>();
 		pickupTintTimer = gameObject.AddComponent<Timer>();
 		leapTimer = gameObject.AddComponent<Timer>();
+
+		health = 100f;
 	}
 	
 	void Update () {
 		if(Game.main.endOfGame || isDead) return;
+		PlayerUI.SetNumShurikens(shurikensRemaining);
 
 		// SetUpGravity(); ////////////////////////// TEMP /////////// This is only for realtime tweaking
 

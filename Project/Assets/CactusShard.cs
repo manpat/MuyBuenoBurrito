@@ -2,6 +2,8 @@
 using System.Collections;
 
 public class CactusShard : MonoBehaviour {
+	public float damage = 5f;
+
 	void Start(){
 		(gameObject.AddComponent<DeathProxy>()).deathTime = 20f; // Destroy self after 20 seconds
 	}
@@ -14,10 +16,10 @@ public class CactusShard : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D col){
 		if(col.gameObject.CompareTag("Player")){
-			col.gameObject.SendMessage("TakeDamage", 10f);
-			col.gameObject.rigidbody2D.AddForce(Vector2.up * 10f / Time.deltaTime);
+			col.gameObject.SendMessage("TakeDamage", damage);
+			col.gameObject.rigidbody2D.AddForce(Vector2.up * 20f / Time.deltaTime);
 		}else if(col.gameObject.CompareTag("Enemy")){
-			col.gameObject.SendMessage("TakeDamage", 10f * (rigidbody2D.velocity.magnitude/8f + 1f));
+			col.gameObject.SendMessage("TakeDamage", damage * (rigidbody2D.velocity.magnitude/7f + 1f));
 		}
 	}
 }
