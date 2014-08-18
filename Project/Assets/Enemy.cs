@@ -24,6 +24,7 @@ public class Enemy : MonoBehaviour {
 
 	public float deathTime = 2f;
 
+	[SerializeField] protected AudioClip onDamageClip;
 	[SerializeField] protected AudioClip onDeathClip;
 
 	protected Animator animator;
@@ -58,7 +59,7 @@ public class Enemy : MonoBehaviour {
 		isDead = true;
 		Game.main.EnemyDeath();
 
-		if(onDeathClip) AudioSource.PlayClipAtPoint(onDeathClip, transform.position, 0.5f);
+		if(onDeathClip) AudioSource.PlayClipAtPoint(onDeathClip, transform.position, 1f);
 		if(rigidbody2D) rigidbody2D.velocity = Vector2.up * 10f;
 		collider2D.enabled = false;
 
@@ -79,7 +80,11 @@ public class Enemy : MonoBehaviour {
 		if(isDead) return;
 
 		health -= dmg;
-		if(health <= 0f) Die(); // Die if necessary but don't die too much
+		if(health <= 0f) {
+			Die(); // Die if necessary but don't die too much
+		}else{
+			if(onDamageClip) AudioSource.PlayClipAtPoint(onDamageClip, transform.position, 0.5f);
+		}
 		Game.main.AddStat("DamageDealt", dmg);
 
 		Game.main.CreateBlamo(transform.position, dmg);

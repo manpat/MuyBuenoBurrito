@@ -67,7 +67,10 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private AudioClip onDeathClip;
 	[SerializeField] private AudioClip onDamageClip;
 	[SerializeField] private AudioClip onAttackClip;
-	[SerializeField] private AudioClip onJumpClip;
+	[SerializeField] private AudioClip onJump1Clip;
+	[SerializeField] private AudioClip onJump2Clip;
+	[SerializeField] private AudioClip onJump3Clip;
+	[SerializeField] private AudioClip onLandClip;
 	[SerializeField] private AudioClip onThrowClip;
 
 	// Pickup stuff
@@ -77,6 +80,8 @@ public class PlayerController : MonoBehaviour {
 	public float speedMultiplier = 1f;
 	[SerializeField] private List<Color> pickupTints = new List<Color>();
 	private Timer pickupTintTimer;
+
+	private Vector3 velocity;
 
 	void Start () {
 		SetUpGravity();
@@ -106,8 +111,8 @@ public class PlayerController : MonoBehaviour {
 			return;
 		}
 
-		Vector3 vel = rigidbody2D.velocity;
-		vel.x = Input.GetAxis("Horizontal") * moveSpeed * speedMultiplier;
+		velocity = rigidbody2D.velocity;
+		velocity.x = Input.GetAxis("Horizontal") * moveSpeed * speedMultiplier;
 
 		ignorePlatform = false;
 
@@ -119,33 +124,36 @@ public class PlayerController : MonoBehaviour {
 
 		}else if(Input.GetKey(KeyCode.Space) && (isGrounded || 
 			(!spaceBeingHeld && !(isDoubleJumping && !canTripleJump || isTripleJumping)
-			&& rigidbody2D.velocity.y <= 0f))){ // Jump
+			&& velocity.y <= 0f))){ // Jump
 
 			// Jump if space is pressed and the player is either on the ground, or has released space previously, hasn't double
 			//		jumped yet, and is falling. Note: player will start falling almost immediately after space is released. 
 
-			vel.y = initialJumpVelocity * (isJumping?doubleJumpMultiplier:1f);
+			velocity.y = initialJumpVelocity * (isJumping?doubleJumpMultiplier:1f);
 			spaceBeingHeld = true;
 
 			if(isGrounded){
 				isGrounded = false;
 				isJumping = true;
+				if(onJump1Clip) AudioSource.PlayClipAtPoint(onJump1Clip, transform.position, 1f);
 			}else if(!isDoubleJumping){
 				isDoubleJumping = true;
+				if(onJump2Clip) AudioSource.PlayClipAtPoint(onJump2Clip, transform.position, 1f);
 			}else if(!isTripleJumping){
 				isTripleJumping = true;
+				if(onJump3Clip) AudioSource.PlayClipAtPoint(onJump3Clip, transform.position, 1f);
 			}
 
-		}else if(Input.GetKeyUp(KeyCode.Space)/* && vel.y > 0f*/){ // Stop jumping if player is moving up still
-			// vel.y *= 0.5f; // Halve upwards velocity
+		}else if(Input.GetKeyUp(KeyCode.Space)/* && velocity.y > 0f*/){ // Stop jumping if player is moving up still
+			// velocity.y *= 0.5f; // Halve upwards velocity
 			spaceBeingHeld = false;
 		}
 
-		rigidbody2D.velocity = vel;
+		rigidbody2D.velocity = velocity;
 
 		short nDirFacing = dirFacing;
-		if(Mathf.Abs(vel.x) > 0f){
-			nDirFacing = (short)Mathf.Sign(vel.x);
+		if(Mathf.Abs(velocity.x) > 0f){
+			nDirFacing = (short)Mathf.Sign(velocity.x);
 		}
 
 		if(Input.GetKeyDown(attackKey)){
@@ -161,12 +169,12 @@ public class PlayerController : MonoBehaviour {
 			SetAnimationState(PlayerState.Leaping, nDirFacing);
 
 		}else if(isJumping || isDoubleJumping || isTripleJumping){
-			if(vel.y < -Physics2D.gravity.magnitude*rigidbody2D.gravityScale * airTime/3f) {
+			if(velocity.y < -Physics2D.gravity.magnitude*rigidbody2D.gravityScale * airTime/3f) {
 				SetAnimationState(PlayerState.Falling, nDirFacing); // Falling
 			}else{
 				SetAnimationState(PlayerState.Jumping, nDirFacing);
 			}
-		}else if(isGrounded && Mathf.Abs(vel.x) > 0.5f){
+		}else if(isGrounded && Mathf.Abs(velocity.x) > 0.5f){
 			SetAnimationState(PlayerState.Running, nDirFacing);
 		}else{
 			SetAnimationState(PlayerState.Idle, nDirFacing);
@@ -220,7 +228,12 @@ public class PlayerController : MonoBehaviour {
 		RaycastHit2D hit = Physics2D.BoxCast((Vector2)transform.position, castBoxSize, 0, -Vector2.up); // Raycast down
 		if(hit && hit.fraction <= (collider2D.bounds.extents.y + 0.1f)){ // If raycast returned something and distance is <= player height/2
 			// on ground
+			
+			if(onLandClip && !isGrounded && velocity.y <= 0f) {
+				AudioSource.PlayClipAtPoint(onLandClip, transform.position, 0.5f);
+			}
 			isGrounded = true;
+
 			isJumping = false;
 			isDoubleJumping = false;
 			isTripleJumping = false;
@@ -248,7 +261,7 @@ public class PlayerController : MonoBehaviour {
 
 		Game.main.AddStat("DamageTaken", amt);
 		Game.main.CreateBlamo(transform.position, amt);
-		if(onDamageClip) AudioSource.PlayClipAtPoint(onDamageClip, transform.position, 1f);
+		if(onDamageClip) AudioSource.PlayClipAtPoint(onDamageClip, transform.position, 0.75f);
 		if(!isDead && health <= 0f) Die(); // Die if necessary but don't die too much
 	}
 

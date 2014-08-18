@@ -59,6 +59,7 @@ public class Game : MonoBehaviour {
 
 	public void PlayerDeath(){ // Should be called when player dies
 		print("Player died");
+		IncStat("PlayerDeaths");
 		Invoke("RespawnPlayer", 2f);
 		// Show stats or whatever
 
@@ -131,6 +132,7 @@ public class Game : MonoBehaviour {
 		score += GetStat("EnemiesKilled")*50f;
 		score += GetStat("PickupsGot")*100f;
 		score -= GetStat("DamageTaken");
+		score -= GetStat("PlayerDeaths")*100f;
 
 		return score;
 	}

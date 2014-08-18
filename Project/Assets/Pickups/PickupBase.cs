@@ -36,7 +36,7 @@ public class PickupBase : MonoBehaviour {
 			collider2D.enabled = false;
 			renderer.enabled = false;
 			Game.main.IncStat("PickupsGot");
-			if(onActiveSound) AudioSource.PlayClipAtPoint(onActiveSound, transform.position, 0.5f);
+			if(onActiveSound) AudioSource.PlayClipAtPoint(onActiveSound, transform.position, 1f);
 			ActivatePickup();
 		}
 	}
