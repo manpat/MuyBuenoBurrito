@@ -47,6 +47,9 @@ public class CloudController : MonoBehaviour {
 	}
 
 	void OnLevelWasLoaded(int lvl){
+		foreach(GameObject g in clouds){
+			Destroy(g);
+		}
 		clouds.Clear();
 		
 		float distInterval = spawnInterval / cloudMoveSpeed;

@@ -64,6 +64,11 @@ public class PlayerController : MonoBehaviour {
 	public GameObject shurikenPrefab;
 	public GameObject blamoPrefab;
 
+	[SerializeField] private AudioClip onDamageClip;
+	[SerializeField] private AudioClip onAttackClip;
+	[SerializeField] private AudioClip onJumpClip;
+	[SerializeField] private AudioClip onThrowClip;
+
 	// Pickup stuff
 
 	public bool canTripleJump = false;
@@ -241,10 +246,13 @@ public class PlayerController : MonoBehaviour {
 
 		Game.main.AddStat("DamageTaken", amt);
 		Game.main.CreateBlamo(transform.position, amt);
+		if(onDamageClip) AudioSource.PlayClipAtPoint(onDamageClip, transform.position, 0.5f);
 		if(!isDead && health <= 0f) Die(); // Die if necessary but don't die too much
 	}
 
 	void Attack(){
+		if(onAttackClip) AudioSource.PlayClipAtPoint(onAttackClip, transform.position, 0.5f);
+
 		Vector2 castBoxSize = collider2D.bounds.extents*2f; // Size of player
 		RaycastHit2D[] hits = Physics2D.BoxCastAll(transform.position, castBoxSize, 0, Vector2.right * (float)dirFacing, maxAttackDist/*, LayerMask.GetMask("Enemy")*/);
 		if(hits.Length > 0){
@@ -257,6 +265,7 @@ public class PlayerController : MonoBehaviour {
 
 	void ThrowShuriken(){
 		if(shurikensRemaining <= 0) return;
+		if(onThrowClip) AudioSource.PlayClipAtPoint(onThrowClip, transform.position, 0.5f);
 
 		GameObject obj = (GameObject)Instantiate(shurikenPrefab, transform.position, Quaternion.identity);
 		Physics2D.IgnoreCollision(collider2D, obj.collider2D, true);
@@ -267,6 +276,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void LeapAttack(){
+		if(onAttackClip) AudioSource.PlayClipAtPoint(onAttackClip, transform.position, 0.5f);
 		Vector2 boxcastSize = collider2D.bounds.extents*3f;
 
 		float angle = Mathf.PI/18f;

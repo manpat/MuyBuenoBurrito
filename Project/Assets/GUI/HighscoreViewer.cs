@@ -17,7 +17,7 @@ public class HighscoreViewer : MonoBehaviour {
 		float height = Camera.main.orthographicSize*2f - 1f;
 		float halfHeight = height/2f;
 
-		float decrement = height/10f;
+		float decrement = height/11f;
 		float y = halfHeight;
 
 		Vector3 pos = transform.position;

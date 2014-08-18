@@ -14,7 +14,7 @@ public class OneWayPlatform : MonoBehaviour {
 			if(c == collider2D || c.rigidbody2D == null) continue;
 
 			float bottom = c.transform.position.y - c.collider2D.bounds.extents.y;
-			bool ignorePlatform = bottom < (platformTop-0.2f);
+			bool ignorePlatform = bottom < platformTop;
 
 			if(c.CompareTag("Enemy")){
 				ignorePlatform = ignorePlatform || c.GetComponent<Enemy>().ignorePlatform;
@@ -29,7 +29,7 @@ public class OneWayPlatform : MonoBehaviour {
 		Debug.DrawLine(new Vector3(transform.position.x-thisScale.x, platformTop), 
 					new Vector3(transform.position.x+thisScale.x, platformTop));
 
-		Physics2D.IgnoreCollision(collider2D, Game.main.player.collider2D, (playerBottom < platformTop-0.2f || Game.main.player.ignorePlatform));
+		Physics2D.IgnoreCollision(collider2D, Game.main.player.collider2D, (playerBottom < platformTop || Game.main.player.ignorePlatform));
 	}
 
 	void OnDrawGizmosSelected(){

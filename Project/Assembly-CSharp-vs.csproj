@@ -72,6 +72,7 @@
      <Compile Include="Assets\Level.cs" />
      <Compile Include="Assets\NachoBag.cs" />
      <Compile Include="Assets\OneWayPlatform.cs" />
+     <Compile Include="Assets\ParallaxScroll.cs" />
      <Compile Include="Assets\Pickups\Bean.cs" />
      <Compile Include="Assets\Pickups\Chili.cs" />
      <Compile Include="Assets\Pickups\Juice.cs" />

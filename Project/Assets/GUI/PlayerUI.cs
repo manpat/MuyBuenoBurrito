@@ -12,6 +12,7 @@ public class PlayerUI : MonoBehaviour {
 	[SerializeField] private Sprite healthBarInactiveSprite;
 	[SerializeField] private Sprite shurikenSprite;
 	[SerializeField] private Font scoreFont;
+	[SerializeField] private Color scoreColor;
 
 	private Texture2D vignette_tex;
 	private GameObject vignette_quad;
@@ -83,7 +84,7 @@ public class PlayerUI : MonoBehaviour {
 		GUI.skin.font = scoreFont;
 		GUIStyle style = new GUIStyle();
 		style.fontSize = 50;
-		style.normal.textColor = Color.white;
+		style.normal.textColor = scoreColor;
 
 		GUI.contentColor = Color.white;
 		GUI.Label(rect, Mathf.FloorToInt(Game.main.CalcScore()).ToString(), style);

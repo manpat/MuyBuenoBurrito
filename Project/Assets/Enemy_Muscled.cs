@@ -223,16 +223,21 @@ public class Enemy_Muscled : Enemy {
 
 	GameObject GetThrowableObject(){
 		Vector2 castBoxSize = collider2D.bounds.extents*2f;
-		castBoxSize.x = 0.1f;
 
-		RaycastHit2D hit = Physics2D.BoxCast(transform.position, castBoxSize, 0, Vector2.right * dirFacing, grabDist, LayerMask.GetMask("Enemy", "Crates")); // Raycast ahead
+		RaycastHit2D hit = Physics2D.BoxCast(transform.position, castBoxSize, 0, Vector2.right * dirFacing, grabDist, LayerMask.GetMask("Enemy", "Crates", "CactusShard")); // Raycast ahead
 
-		if(!hit) return null;
+		if(!hit) {
+			return null;
+		}
 
 		GameObject obj = hit.collider.gameObject;
 		int objlayer = obj.layer;
 
-		if( (objlayer != LayerMask.NameToLayer("Crates")) && (obj.GetComponent<Enemy_Basic>() == null) ) 
+		bool ignore = obj.GetComponent<Enemy_Basic>() == null;
+		ignore &= objlayer != LayerMask.NameToLayer("Crates");
+		ignore &= objlayer != LayerMask.NameToLayer("CactusShard");
+
+		if( ignore ) 
 			return null;
 
 		return obj;

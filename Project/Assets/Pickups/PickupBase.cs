@@ -2,6 +2,8 @@
 using System.Collections;
 
 public class PickupBase : MonoBehaviour {
+	[SerializeField] private AudioClip onActiveSound;
+
 	public bool pickupGot = false;
 	// time effect lasts 5ish secs, open for changes
 	public float effectTime = 5f;
@@ -34,6 +36,7 @@ public class PickupBase : MonoBehaviour {
 			collider2D.enabled = false;
 			renderer.enabled = false;
 			Game.main.IncStat("PickupsGot");
+			if(onActiveSound) AudioSource.PlayClipAtPoint(onActiveSound, transform.position, 0.5f);
 			ActivatePickup();
 		}
 	}
