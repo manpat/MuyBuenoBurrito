@@ -8,6 +8,8 @@ public enum PlayerState {
 	Jumping,
 	Falling,
 	Attacking,
+	Leaping,
+	Throwing,
 	Dead,
 	// more
 };
@@ -146,11 +148,11 @@ public class PlayerController : MonoBehaviour {
 
 		}else if(Input.GetKeyDown(throwShurikenKey) && shurikensRemaining > 0){
 			ThrowShuriken();
-			SetAnimationState(PlayerState.Attacking, nDirFacing);
+			SetAnimationState(PlayerState.Throwing, nDirFacing);
 
 		}else if(Input.GetKeyDown(specialKey) && leapTimer > leapCooldown){
 			LeapAttack();
-			SetAnimationState(PlayerState.Jumping, nDirFacing);
+			SetAnimationState(PlayerState.Leaping, nDirFacing);
 
 		}else if(isJumping || isDoubleJumping || isTripleJumping){
 			if(vel.y < -Physics2D.gravity.magnitude*rigidbody2D.gravityScale * airTime/3f) {
@@ -309,6 +311,12 @@ public class PlayerController : MonoBehaviour {
 				break;
 			case PlayerState.Attacking:
 				animator.Play("attack");
+				break;
+			case PlayerState.Throwing:
+				animator.Play("throw");
+				break;
+			case PlayerState.Leaping:
+				animator.Play("leap");
 				break;
 			case PlayerState.Dead:
 				animator.Play("damage");

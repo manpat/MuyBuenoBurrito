@@ -34,7 +34,9 @@ public class CloudController : MonoBehaviour {
 	}
 
 	GameObject SpawnCloud(Vector3 pos){
-		return (GameObject)Instantiate(cloudPrefab, pos, Quaternion.identity);
+		GameObject o = (GameObject)Instantiate(cloudPrefab, pos, Quaternion.identity);
+		o.transform.parent = transform;
+		return o;
 	}
 
 	void OnDrawGizmos(){

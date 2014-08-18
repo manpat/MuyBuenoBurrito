@@ -232,7 +232,7 @@ public class Enemy_Muscled : Enemy {
 		GameObject obj = hit.collider.gameObject;
 		int objlayer = obj.layer;
 
-		if(!( (objlayer == LayerMask.NameToLayer("Crates")) || (obj.GetComponent<Enemy_Basic>() != null) )) 
+		if( (objlayer != LayerMask.NameToLayer("Crates")) && (obj.GetComponent<Enemy_Basic>() == null) ) 
 			return null;
 
 		return obj;
