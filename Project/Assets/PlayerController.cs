@@ -64,6 +64,7 @@ public class PlayerController : MonoBehaviour {
 	public GameObject shurikenPrefab;
 	public GameObject blamoPrefab;
 
+	[SerializeField] private AudioClip onDeathClip;
 	[SerializeField] private AudioClip onDamageClip;
 	[SerializeField] private AudioClip onAttackClip;
 	[SerializeField] private AudioClip onJumpClip;
@@ -231,6 +232,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void Die(){
+		if(onDeathClip) AudioSource.PlayClipAtPoint(onDeathClip, transform.position, 1f);
 		Game.main.PlayerDeath();
 		isDead = true;
 		SetAnimationState(PlayerState.Dead, dirFacing);
@@ -246,12 +248,12 @@ public class PlayerController : MonoBehaviour {
 
 		Game.main.AddStat("DamageTaken", amt);
 		Game.main.CreateBlamo(transform.position, amt);
-		if(onDamageClip) AudioSource.PlayClipAtPoint(onDamageClip, transform.position, 0.5f);
+		if(onDamageClip) AudioSource.PlayClipAtPoint(onDamageClip, transform.position, 1f);
 		if(!isDead && health <= 0f) Die(); // Die if necessary but don't die too much
 	}
 
 	void Attack(){
-		if(onAttackClip) AudioSource.PlayClipAtPoint(onAttackClip, transform.position, 0.5f);
+		if(onAttackClip) AudioSource.PlayClipAtPoint(onAttackClip, transform.position, 1f);
 
 		Vector2 castBoxSize = collider2D.bounds.extents*2f; // Size of player
 		RaycastHit2D[] hits = Physics2D.BoxCastAll(transform.position, castBoxSize, 0, Vector2.right * (float)dirFacing, maxAttackDist/*, LayerMask.GetMask("Enemy")*/);
@@ -265,7 +267,7 @@ public class PlayerController : MonoBehaviour {
 
 	void ThrowShuriken(){
 		if(shurikensRemaining <= 0) return;
-		if(onThrowClip) AudioSource.PlayClipAtPoint(onThrowClip, transform.position, 0.5f);
+		if(onThrowClip) AudioSource.PlayClipAtPoint(onThrowClip, transform.position, 1f);
 
 		GameObject obj = (GameObject)Instantiate(shurikenPrefab, transform.position, Quaternion.identity);
 		Physics2D.IgnoreCollision(collider2D, obj.collider2D, true);
@@ -276,7 +278,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void LeapAttack(){
-		if(onAttackClip) AudioSource.PlayClipAtPoint(onAttackClip, transform.position, 0.5f);
+		if(onAttackClip) AudioSource.PlayClipAtPoint(onAttackClip, transform.position, 1f);
 		Vector2 boxcastSize = collider2D.bounds.extents*3f;
 
 		float angle = Mathf.PI/18f;

@@ -10,6 +10,8 @@ public class MenuScript : MonoBehaviour {
 	private Vector3 initPos;
 	private Timer slideTimer;
 
+	public AudioClip onButtonClick;
+
 	void Awake () {
 		main = this;
 	}
@@ -27,6 +29,8 @@ public class MenuScript : MonoBehaviour {
 	}
 
 	public void DoThing(string action){
+		if(onButtonClick) AudioSource.PlayClipAtPoint(onButtonClick, transform.position, 0.5f);
+
 		switch(action){
 			case "StartGame":
 				Application.LoadLevel("level1");

@@ -24,6 +24,8 @@ public class Enemy : MonoBehaviour {
 
 	public float deathTime = 2f;
 
+	[SerializeField] protected AudioClip onDeathClip;
+
 	protected Animator animator;
 	protected Timer animationTimer;
 	protected EnemyState state = EnemyState.Idle;
@@ -56,6 +58,7 @@ public class Enemy : MonoBehaviour {
 		isDead = true;
 		Game.main.EnemyDeath();
 
+		if(onDeathClip) AudioSource.PlayClipAtPoint(onDeathClip, transform.position, 0.5f);
 		if(rigidbody2D) rigidbody2D.velocity = Vector2.up * 10f;
 		collider2D.enabled = false;
 
