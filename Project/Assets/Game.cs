@@ -5,6 +5,8 @@ using System.Collections.Generic;
 public class Game : MonoBehaviour {
 	static public Game main; // Singleton
 
+	[SerializeField] private AudioClip soundtrack;
+
 	public GameObject playerPrefab;
 	public PlayerController player;
 
