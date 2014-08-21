@@ -30,7 +30,7 @@ public class PlayerController : MonoBehaviour {
 	public float health {
 		get{ return _health; }
 		set{
-			_health = value;;
+			_health = Mathf.Min(value, 200f);
 			PlayerUI.SetHealthbarValue(_health/100f);
 		}
 	}

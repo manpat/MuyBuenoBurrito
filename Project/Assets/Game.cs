@@ -21,6 +21,8 @@ public class Game : MonoBehaviour {
 	private bool leavingLevel = false;
 	private float fadeCounter = 0f;
 
+	[SerializeField] private float fadeTime = 1.25f;
+
 	void Awake(){
 		main = this; // Set singleton
 		DontDestroyOnLoad(this);
@@ -37,13 +39,13 @@ public class Game : MonoBehaviour {
 		}
 
 		if(!leavingLevel && fadeCounter > 0f){
-			fadeCounter -= Time.deltaTime;
+			fadeCounter -= Time.deltaTime/fadeTime;
 			if(fadeCounter <= 0f){
 				PlayerUI.SetEnabled(true);
 				fadeCounter = 0f;
 			}
 		}else if(leavingLevel){
-			fadeCounter += Time.deltaTime;
+			fadeCounter += Time.deltaTime/fadeTime;
 		}
 
 		PlayerUI.SetFade(Mathf.Clamp01(fadeCounter));
@@ -86,7 +88,7 @@ public class Game : MonoBehaviour {
 			leavingLevel = true;
 			PlayerUI.SetEnabled(false);
 
-			Invoke("LoadNextLevel", 2f);
+			Invoke("LoadNextLevel", fadeTime);
 		}
 	}
 

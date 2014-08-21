@@ -8,6 +8,8 @@ public class EndGameScreen : MonoBehaviour {
 
 	TextMesh[] scoreList;
 	TextMesh[] nameList;
+	TextMesh promptText;
+
 	List<HighscoreData> hd;
 	HighscoreData playerHighscore = new HighscoreData();
 
@@ -70,13 +72,39 @@ public class EndGameScreen : MonoBehaviour {
 			y -= decrement;
 		}
 
+		if(posInHighscores != -1){
+			GameObject obj = new GameObject("Highscore_prompt");
+
+			MeshRenderer mr = obj.AddComponent<MeshRenderer>();
+			mr.material = font.material;
+			mr.material.color = color;
+
+			promptText = obj.AddComponent<TextMesh>();
+			promptText.text = "Enter a name";
+			promptText.font = font;
+			promptText.fontSize = 150;
+			promptText.characterSize = 0.05f;
+
+			promptText.anchor = TextAnchor.MiddleCenter;
+			obj.transform.parent = transform;
+			Vector3 hspos = scoreList[posInHighscores].transform.position;
+			hspos.x = 1f;
+			obj.transform.position = hspos;
+		}
+
+
 		Destroy(Game.main.gameObject);
 	}
 
 	void Update(){
 		if(posInHighscores == -1) return;
 
-		nameList[posInHighscores].text = "<color=\"red\">"+playerHighscore.name + "</color> ";
+		Color c = Color.Lerp(Color.red, Color.yellow, Mathf.PingPong(Time.time*3f, 1.5f));
+
+		nameList[posInHighscores].text = playerHighscore.name + "_";
+		nameList[posInHighscores].renderer.material.color = c;
+		scoreList[posInHighscores].renderer.material.color = c;
+		promptText.renderer.material.color = c;
 	}
 
 	void OnGUI(){
@@ -91,7 +119,6 @@ public class EndGameScreen : MonoBehaviour {
 
 			}else if((int)e.character > 10 && e.character != ',' && playerHighscore.name.Length < 25){ // Not return
 				playerHighscore.name += e.character;
-				print((int)e.character);
 			}
 		}
 	}

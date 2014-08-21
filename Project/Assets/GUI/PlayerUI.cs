@@ -167,17 +167,28 @@ public class PlayerUI : MonoBehaviour {
 		rect.y = Screen.height - rect.height;
 
 		GUI.BeginGroup(rect);
-			rect.height *= 2f;
+			rect.height *= 3f;
 			rect.x = 0;
 			rect.y = -bounds.size.y * scale;
 
 			GUI.DrawTexture(rect, healthBarInactiveSprite.texture);
 
-			GUI.BeginGroup(new Rect(0, 0, rect.width*healthbarValue, rect.height));
+			GUI.BeginGroup(new Rect(0, 0, rect.width*Mathf.Clamp01(healthbarValue), rect.height));
 				rect.y = 0f;
 				GUI.DrawTexture(rect, healthBarActiveSprite.texture);
 			GUI.EndGroup();
+
+			if(healthbarValue > 1f){
+				rect.x = 0;
+				rect.y = -bounds.size.y * scale * 2f;
+
+				GUI.BeginGroup(new Rect(0, 0, rect.width*Mathf.Clamp01(healthbarValue-1f), rect.height));
+					// rect.y = 0f;
+					GUI.DrawTexture(rect, healthBarActiveSprite.texture);
+				GUI.EndGroup();
+			}
 		GUI.EndGroup();
+
 	}
 
 	static public void SetEnabled(bool e){
@@ -188,10 +199,10 @@ public class PlayerUI : MonoBehaviour {
 	}
 
 	static public void AddPickup(PickupBase p){
-		if(!main.pickups.Exists((x) => (x == p))) main.pickups.Add(p);
+		if(!main.pickups.Exists((x) => (x.GetName() == p.GetName()))) main.pickups.Add(p);
 	}
 	static public void RemovePickup(PickupBase p){
-		main.pickups.RemoveAll((x) => (x == p));
+		main.pickups.RemoveAll((x) => (x.GetName() == p.GetName()));
 	}
 
 	static public void OnPlayerDeath(){
@@ -214,7 +225,7 @@ public class PlayerUI : MonoBehaviour {
 	}
 
 	static public void SetHealthbarValue(float h){
-		main.healthbarValue = Mathf.Clamp(h, 0f, 1f);
+		main.healthbarValue = Mathf.Clamp(h, 0f, 2f);
 	}
 	static public void SetNumShurikens(int n){
 		main.numShurikens = n;
