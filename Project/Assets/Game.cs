@@ -18,6 +18,8 @@ public class Game : MonoBehaviour {
 	private Dictionary<string, float> stats = new Dictionary<string, float>();
 
 	public bool endOfGame = false;
+	private bool leavingLevel = false;
+	private float fadeCounter = 0f;
 
 	void Awake(){
 		main = this; // Set singleton
@@ -33,6 +35,18 @@ public class Game : MonoBehaviour {
 		if(Input.GetKey(KeyCode.Return)){
 			PlayerEndLevel();
 		}
+
+		if(!leavingLevel && fadeCounter > 0f){
+			fadeCounter -= Time.deltaTime;
+			if(fadeCounter <= 0f){
+				PlayerUI.SetEnabled(true);
+				fadeCounter = 0f;
+			}
+		}else if(leavingLevel){
+			fadeCounter += Time.deltaTime;
+		}
+
+		PlayerUI.SetFade(Mathf.Clamp01(fadeCounter));
 	}
 
 	public Blamo CreateBlamo(Vector2 pos, float dmg){
@@ -68,6 +82,20 @@ public class Game : MonoBehaviour {
 	}
 	public void PlayerEndLevel(){ // Should be called when player reaches end of level
 		print("End of level");
+		if(!leavingLevel){
+			leavingLevel = true;
+			PlayerUI.SetEnabled(false);
+
+			Invoke("LoadNextLevel", 2f);
+		}
+	}
+
+	public void EnemyDeath(){ // Should be called when an enemy dies
+		print("Enemy died");
+		IncStat("EnemiesKilled");
+	}
+
+	private void LoadNextLevel(){
 		switch(Application.loadedLevelName){
 			case "level1":
 				Application.LoadLevel("level2");
@@ -80,13 +108,9 @@ public class Game : MonoBehaviour {
 		}
 	}
 
-	public void EnemyDeath(){ // Should be called when an enemy dies
-		print("Enemy died");
-		IncStat("EnemiesKilled");
-	}
-
 	void OnLevelWasLoaded(int level){
 		print("Level loaded: " + level.ToString());
+		leavingLevel = false;
 
 		if(endOfGame)  return;
 		currentLevel = FindObjectOfType<Level>();

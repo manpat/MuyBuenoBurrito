@@ -5,7 +5,8 @@ using System.Collections.Generic;
 public class PlayerUI : MonoBehaviour {
 	static private PlayerUI main;
 
-	[SerializeField] private Shader shader;
+	[SerializeField] private Shader vignetteShader;
+	[SerializeField] private Shader fadeShader;
 	[SerializeField] private int vignetteSize = 15;
 	[SerializeField] private float vignetteMaxAlpha = 0.2f;
 
@@ -15,13 +16,17 @@ public class PlayerUI : MonoBehaviour {
 	[SerializeField] private Font scoreFont;
 	[SerializeField] private Color scoreColor;
 
+	private Texture2D fade_tex;
 	private Texture2D vignette_tex;
 	private GameObject vignette_quad;
 
 	private float healthbarValue = 1f;
 	private int numShurikens = 3;
+	private float fadeVal = 0f;
 
 	private List<PickupBase> pickups = new List<PickupBase>();
+
+	private bool guiEnabled = true;
 
 	void Awake(){
 		main = this;
@@ -53,7 +58,7 @@ public class PlayerUI : MonoBehaviour {
 
 		vignette_quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
 		vignette_quad.renderer.material.mainTexture = vignette_tex;
-		vignette_quad.renderer.material.shader = shader;
+		vignette_quad.renderer.material.shader = vignetteShader;
 		vignette_quad.transform.position = Camera.main.transform.position + Vector3.forward * 2f;
 		vignette_quad.transform.parent = Camera.main.transform;
 
@@ -65,6 +70,11 @@ public class PlayerUI : MonoBehaviour {
 
 		SetVignetteIntensity(0f);
 		SetVignetteColor(Color.white);
+
+
+		fade_tex = new Texture2D(1,1);
+		fade_tex.SetPixel(0, 0, Color.white);
+		fade_tex.Apply();
 	}
 
 	void OnLevelWasLoaded(int i){
@@ -72,10 +82,26 @@ public class PlayerUI : MonoBehaviour {
 	}
 
 	void OnGUI(){
-		DrawScore();
-		DrawHealthbar();
-		DrawShurikens();
-		DrawPickupText();
+		DrawFade();
+
+		if(guiEnabled){
+			DrawScore();
+			DrawHealthbar();
+			DrawShurikens();
+			DrawPickupText();
+		}
+	}
+
+	void DrawFade(){
+		Color prev = GUI.color;
+
+		Color c = Color.black;
+		c.a = fadeVal;
+		GUI.color = c;
+
+		GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), fade_tex);
+
+		GUI.color = prev;
 	}
 
 	void DrawScore(){
@@ -154,6 +180,13 @@ public class PlayerUI : MonoBehaviour {
 		GUI.EndGroup();
 	}
 
+	static public void SetEnabled(bool e){
+		main.guiEnabled = e;
+		if(!main.guiEnabled){
+			SetVignetteIntensity(0f);
+		}
+	}
+
 	static public void AddPickup(PickupBase p){
 		if(!main.pickups.Exists((x) => (x == p))) main.pickups.Add(p);
 	}
@@ -174,6 +207,10 @@ public class PlayerUI : MonoBehaviour {
 		float a = main.vignette_quad.renderer.material.GetColor("_TintColor").a;
 		col.a = main.vignetteMaxAlpha*Mathf.Clamp(a, 0f, 1f);
 		main.vignette_quad.renderer.material.SetColor ("_TintColor", col);
+	}
+
+	static public void SetFade(float a){
+		main.fadeVal = a;
 	}
 
 	static public void SetHealthbarValue(float h){
