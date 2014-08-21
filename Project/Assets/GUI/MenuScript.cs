@@ -64,6 +64,10 @@ public class MenuScript : MonoBehaviour {
 				SetSelectedScreen(6);
 				break;
 
+			case "Quit":
+				Application.Quit();
+				break;
+
 			default:
 			break;
 		}

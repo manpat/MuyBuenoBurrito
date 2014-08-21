@@ -183,6 +183,8 @@ public class PlayerController : MonoBehaviour {
 		CheckHeight();
 		MoveCamera();
 		DoPickupTint();
+
+		
 	}
 
 	void SetUpGravity(){

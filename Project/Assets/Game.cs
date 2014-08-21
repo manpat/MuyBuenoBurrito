@@ -61,6 +61,8 @@ public class Game : MonoBehaviour {
 		print("Player died");
 		IncStat("PlayerDeaths");
 		Invoke("RespawnPlayer", 2f);
+
+		PlayerUI.OnPlayerDeath();
 		// Show stats or whatever
 
 	}

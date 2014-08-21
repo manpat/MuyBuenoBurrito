@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerUI : MonoBehaviour {
 	static private PlayerUI main;
@@ -19,6 +20,8 @@ public class PlayerUI : MonoBehaviour {
 
 	private float healthbarValue = 1f;
 	private int numShurikens = 3;
+
+	private List<PickupBase> pickups = new List<PickupBase>();
 
 	void Awake(){
 		main = this;
@@ -72,6 +75,7 @@ public class PlayerUI : MonoBehaviour {
 		DrawScore();
 		DrawHealthbar();
 		DrawShurikens();
+		DrawPickupText();
 	}
 
 	void DrawScore(){
@@ -88,6 +92,26 @@ public class PlayerUI : MonoBehaviour {
 
 		GUI.contentColor = Color.white;
 		GUI.Label(rect, Mathf.FloorToInt(Game.main.CalcScore()).ToString(), style);
+	}
+
+	void DrawPickupText(){
+		Rect rect = new Rect();
+		rect.width = 200;
+		rect.height = 200;
+		rect.x = Screen.width - 210;
+		rect.y = 5;
+
+		GUI.skin.font = scoreFont;
+		GUIStyle style = new GUIStyle();
+		style.fontSize = 50;
+		style.normal.textColor = scoreColor;
+		style.alignment = TextAnchor.UpperRight;
+
+		foreach(PickupBase p in pickups){
+			GUI.contentColor = p.tint;
+			GUI.Label(rect, p.GetName(), style);
+			rect.y += 40;
+		}
 	}
 
 	void DrawShurikens(){
@@ -128,6 +152,17 @@ public class PlayerUI : MonoBehaviour {
 				GUI.DrawTexture(rect, healthBarActiveSprite.texture);
 			GUI.EndGroup();
 		GUI.EndGroup();
+	}
+
+	static public void AddPickup(PickupBase p){
+		if(!main.pickups.Exists((x) => (x == p))) main.pickups.Add(p);
+	}
+	static public void RemovePickup(PickupBase p){
+		main.pickups.RemoveAll((x) => (x == p));
+	}
+
+	static public void OnPlayerDeath(){
+		main.pickups.Clear();
 	}
 
 	static public void SetVignetteIntensity(float a){

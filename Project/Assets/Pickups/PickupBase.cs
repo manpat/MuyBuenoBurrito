@@ -3,6 +3,7 @@ using System.Collections;
 
 public class PickupBase : MonoBehaviour {
 	[SerializeField] private AudioClip onActiveSound;
+	[SerializeField] private string pickupName;
 
 	public bool pickupGot = false;
 	// time effect lasts 5ish secs, open for changes
@@ -21,6 +22,7 @@ public class PickupBase : MonoBehaviour {
 			{
 				DeactivatePickup();
 				Game.main.player.RemovePickupTint(tint);
+				PlayerUI.RemovePickup(this);
 				Destroy(gameObject);
 			}
 		}
@@ -38,7 +40,12 @@ public class PickupBase : MonoBehaviour {
 			Game.main.IncStat("PickupsGot");
 			if(onActiveSound) AudioSource.PlayClipAtPoint(onActiveSound, transform.position, 1f);
 			ActivatePickup();
+			PlayerUI.AddPickup(this);
 		}
+	}
+
+	public string GetName(){
+		return pickupName;
 	}
 
 	public virtual void ActivatePickup(){}
