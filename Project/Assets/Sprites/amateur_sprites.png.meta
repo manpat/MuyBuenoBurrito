@@ -1,6 +1,21 @@
 fileFormatVersion: 2
 guid: ece6c63686992f7429b4eff19be524d7
 TextureImporter:
+  fileIDToRecycleName:
+    21300000: Amateur_Sprites_0
+    21300002: Amateur_Sprites_1
+    21300004: Amateur_Sprites_2
+    21300006: Amateur_Sprites_3
+    21300008: Amateur_Sprites_4
+    21300010: Amateur_Sprites_5
+    21300012: Amateur_Sprites_6
+    21300014: Amateur_Sprites_7
+    21300016: Amateur_Sprites_8
+    21300018: Amateur_Sprites_9
+    21300020: Amateur_Sprites_10
+    21300022: Amateur_Sprites_11
+    21300024: Amateur_Sprites_12
+    21300026: Amateur_Sprites_16
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0

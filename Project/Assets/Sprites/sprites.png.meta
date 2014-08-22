@@ -1,6 +1,28 @@
 fileFormatVersion: 2
 guid: 3a672e658882ced4db1585f4a04d8e58
 TextureImporter:
+  fileIDToRecycleName:
+    21300000: sprites_0
+    21300002: sprites_1
+    21300004: sprites_2
+    21300006: sprites_3
+    21300008: sprites_4
+    21300010: sprites_5
+    21300012: sprites_6
+    21300014: sprites_7
+    21300016: sprites_8
+    21300018: sprites_9
+    21300020: sprites_10
+    21300022: sprites_11
+    21300024: sprites_12
+    21300026: sprites_13
+    21300028: sprites_14
+    21300030: sprites_15
+    21300032: sprites_16
+    21300034: sprites_17
+    21300036: sprites_18
+    21300038: sprites_19
+    21300040: sprites_20
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0

@@ -1,6 +1,9 @@
 fileFormatVersion: 2
 guid: 6c72cd6d967be2c4b9be7f8ea49d6f96
 TextureImporter:
+  fileIDToRecycleName:
+    21300000: healthbar_0
+    21300002: healthbar_1
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
